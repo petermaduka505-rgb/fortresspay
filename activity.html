@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Activity — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-activity-filters {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .fp-filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1.5px solid var(--fp-gray-200);
+        background: var(--fp-white);
+        color: var(--fp-gray-600);
+        cursor: default;
+        transition:
+          background var(--fp-transition),
+          border-color var(--fp-transition),
+          color var(--fp-transition);
+      }
+      .fp-filter-chip-active {
+        background: var(--fp-blue-light);
+        border-color: var(--fp-blue);
+        color: var(--fp-blue);
+      }
+
+      .fp-activity-summary {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .fp-summary-chip {
+        flex: 1;
+        min-width: 130px;
+        background: var(--fp-white);
+        border: 1px solid var(--fp-gray-200);
+        border-radius: var(--fp-radius);
+        padding: 14px 16px;
+        box-shadow: var(--fp-shadow);
+      }
+      .fp-summary-chip-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--fp-gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+      }
+      .fp-summary-chip-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--fp-gray-900);
+        letter-spacing: -0.3px;
+      }
+      .fp-summary-chip-value.green {
+        color: var(--fp-green);
+      }
+
+      .fp-txn-month-header {
+        padding: 8px 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--fp-gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--fp-gray-50);
+        border-bottom: 1px solid var(--fp-gray-100);
+        border-top: 1px solid var(--fp-gray-100);
+      }
+
+      .fp-txn-month-header:first-child {
+        border-top: none;
+      }
+
+      .fp-view-more-btn {
+        width: 100%;
+        padding: 14px;
+        background: none;
+        border: none;
+        color: var(--fp-blue);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background var(--fp-transition);
+        border-top: 1px solid var(--fp-gray-100);
+      }
+      .fp-view-more-btn:hover {
+        background: var(--fp-gray-50);
+      }
+      .fp-view-more-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .fp-view-more-btn-loading {
+        color: var(--fp-gray-400) !important;
+      }
+
+      .fp-timeline-link {
+        display: block;
+        text-align: center;
+        padding: 14px 20px;
+        font-size: 0.875rem;
+        color: var(--fp-blue);
+        font-weight: 600;
+        border-top: 1px solid var(--fp-gray-100);
+        cursor: pointer;
+        transition: background var(--fp-transition);
+      }
+      .fp-timeline-link:hover {
+        background: var(--fp-gray-50);
+      }
+
+      /* Statement modal */
+      .fp-stmt-success {
+        text-align: center;
+        padding: 24px 0 8px;
+      }
+      .fp-stmt-success-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--fp-green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-green);
+        margin: 0 auto 16px;
+      }
+      .fp-stmt-success-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+        margin-bottom: 8px;
+      }
+      .fp-stmt-success-text {
+        font-size: 0.875rem;
+        color: var(--fp-gray-500);
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container">
+        <!-- Page header -->
+        <div class="fp-page-header">
+          <a
+            href="dashboard.html"
+            class="fp-back-btn"
+            aria-label="Back to dashboard"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M19 12H5M5 12l7 7M5 12l7-7"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <div>
+            <h1 class="fp-page-title">Transaction History</h1>
+            <p class="fp-page-subtitle">All incoming credits to your account</p>
+          </div>
+        </div>
+
+        <!-- Summary chips -->
+        <div class="fp-activity-summary" id="fp-activity-summary">
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Total Credits</div>
+            <div
+              class="fp-summary-chip-value green fp-skeleton"
+              style="height: 20px; width: 100px; border-radius: 4px"
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Transactions</div>
+            <div
+              class="fp-summary-chip-value fp-skeleton"
+              style="height: 20px; width: 40px; border-radius: 4px"
+            >
+              &nbsp;
+            </div>
+          </div>
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Account Type</div>
+            <div class="fp-summary-chip-value" style="font-size: 0.85rem">
+              Fixed Deposit
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter chips (visual only) -->
+        <div class="fp-activity-filters">
+          <span class="fp-filter-chip fp-filter-chip-active">All</span>
+          <span class="fp-filter-chip">Credits</span>
+          <span class="fp-filter-chip">2024</span>
+          <span class="fp-filter-chip">2023</span>
+        </div>
+
+        <!-- Transaction list card -->
+        <div class="fp-card" id="fp-txn-card">
+          <div id="fp-txn-list-wrap">
+            <!-- Skeleton rows -->
+            <div id="fp-skeleton-rows">
+              ${[...Array(6)].map(() => `
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  padding: 14px 20px;
+                  border-bottom: 1px solid var(--fp-gray-100);
+                "
+              >
+                <div
+                  style="
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 50%;
+                    flex-shrink: 0;
+                  "
+                  class="fp-skeleton"
+                ></div>
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                  "
+                >
+                  <div
+                    style="height: 13px; width: 55%; border-radius: 4px"
+                    class="fp-skeleton"
+                  ></div>
+                  <div
+                    style="height: 11px; width: 38%; border-radius: 4px"
+                    class="fp-skeleton"
+                  ></div>
+                </div>
+                <div
+                  style="width: 72px; height: 14px; border-radius: 4px"
+                  class="fp-skeleton"
+                ></div>
+              </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <!-- View more / timeline link -->
+          <div id="fp-load-more-wrap" class="fp-hidden">
+            <button class="fp-view-more-btn" id="fp-view-more-btn">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 5v14M5 12l7 7 7-7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Load more transactions
+            </button>
+          </div>
+          <div id="fp-timeline-wrap" class="fp-hidden">
+            <span class="fp-timeline-link" id="fp-timeline-link">
+              Looking for a specific timeline? Click here
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <!-- Statement request modal -->
+    <div
+      class="fp-modal"
+      id="fp-stmt-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fp-stmt-modal-title"
+    >
+      <div class="fp-modal-box">
+        <button
+          class="fp-modal-close"
+          id="fp-stmt-modal-close"
+          aria-label="Close"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+        <!-- Form view -->
+        <div id="fp-stmt-form-view">
+          <h2 class="fp-modal-title" id="fp-stmt-modal-title">
+            Request Account Statement
+          </h2>
+          <p class="fp-modal-subtitle">
+            We will send a detailed statement to your registered email address.
+          </p>
+
+          <form id="fp-stmt-form" novalidate>
+            <div class="fp-form-group">
+              <label class="fp-label" for="fp-stmt-from">
+                From Date <span class="fp-required">*</span>
+              </label>
+              <input
+                class="fp-input"
+                type="date"
+                id="fp-stmt-from"
+                name="from"
+                required
+              />
+              <p class="fp-field-error fp-hidden" id="fp-stmt-from-error"></p>
+            </div>
+            <div class="fp-form-group">
+              <label class="fp-label" for="fp-stmt-to">
+                To Date <span class="fp-required">*</span>
+              </label>
+              <input
+                class="fp-input"
+                type="date"
+                id="fp-stmt-to"
+                name="to"
+                required
+              />
+              <p class="fp-field-error fp-hidden" id="fp-stmt-to-error"></p>
+            </div>
+            <div class="fp-form-group">
+              <label class="fp-label" for="fp-stmt-email">
+                Delivery Email <span class="fp-required">*</span>
+              </label>
+              <input
+                class="fp-input"
+                type="email"
+                id="fp-stmt-email"
+                name="email"
+                required
+              />
+              <p class="fp-field-error fp-hidden" id="fp-stmt-email-error"></p>
+            </div>
+
+            <div
+              class="fp-form-error fp-hidden"
+              id="fp-stmt-form-error"
+              style="
+                background: var(--fp-red-light);
+                border: 1px solid #fca5a5;
+                border-radius: var(--fp-radius-sm);
+                padding: 12px 14px;
+                font-size: 0.875rem;
+                color: #7f1d1d;
+                margin-bottom: 16px;
+              "
+            ></div>
+
+            <button
+              type="submit"
+              class="fp-btn fp-btn-primary fp-btn-full"
+              id="fp-stmt-submit"
+            >
+              Submit Request
+            </button>
+          </form>
+        </div>
+
+        <!-- Success view -->
+        <div id="fp-stmt-success-view" class="fp-hidden">
+          <div class="fp-stmt-success">
+            <div class="fp-stmt-success-icon">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <p class="fp-stmt-success-title">Request Submitted</p>
+            <p class="fp-stmt-success-text">
+              Your statement request has been received. A detailed PDF statement
+              will be sent to your email address within 1-2 business days.
+            </p>
+            <button
+              class="fp-btn fp-btn-outline fp-btn-full"
+              id="fp-stmt-done-btn"
+              style="margin-top: 24px"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("activity")) return;
+
+        const INITIAL_LOAD = 12;
+        const PER_PAGE = 12;
+        const TOTAL_TXNS = 96;
+
+        let offset = 0;
+        let allLoaded = false;
+        let isLoading = false;
+        let renderedItems = [];
+
+        /* ---- Populate summary ---- */
+        getBalance()
+          .then(function (balance) {
+            const fmt = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(balance);
+            document.getElementById("fp-activity-summary").innerHTML = `
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Total Credits</div>
+            <div class="fp-summary-chip-value green">${fmt}</div>
+          </div>
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Transactions</div>
+            <div class="fp-summary-chip-value">${TOTAL_TXNS}</div>
+          </div>
+          <div class="fp-summary-chip">
+            <div class="fp-summary-chip-label">Account Type</div>
+            <div class="fp-summary-chip-value" style="font-size:0.85rem;">Fixed Deposit</div>
+          </div>
+        `;
+          })
+          .catch(function () {});
+
+        /* ---- Render a batch of transactions ---- */
+        function renderTransactions(items) {
+          const wrap = document.getElementById("fp-txn-list-wrap");
+
+          items.forEach(function (t) {
+            const amt = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(t.amount);
+
+            /* Month/year group header */
+            const monthYear = t.date
+              .replace(/\s\d+,/, ",")
+              .replace(/,\s/, " "); /* "Month YYYY" */
+            const lastItem = renderedItems[renderedItems.length - 1];
+            const lastMY = lastItem
+              ? lastItem.date.replace(/\s\d+,/, ",").replace(/,\s/, " ")
+              : null;
+
+            if (monthYear !== lastMY) {
+              const header = document.createElement("div");
+              header.className = "fp-txn-month-header";
+              header.textContent =
+                t.date.split(" ").slice(0, 1).join(" ") +
+                " " +
+                t.date.split(" ").slice(2).join(" ");
+              wrap.appendChild(header);
+            }
+
+            const link = document.createElement("a");
+            link.href = "transaction.html?id=" + encodeURIComponent(t.id);
+            link.className = "fp-txn-item";
+            link.innerHTML = `
+            <div class="fp-txn-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="fp-txn-info">
+              <p class="fp-txn-name">${t.sender}</p>
+              <p class="fp-txn-meta">${t.date} &middot; ${t.method}</p>
+            </div>
+            <div>
+              <p class="fp-txn-amount">+${amt}</p>
+            </div>
+            <div class="fp-txn-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          `;
+            wrap.appendChild(link);
+            renderedItems.push(t);
+          });
+        }
+
+        /* ---- Load a page of transactions ---- */
+        function loadPage() {
+          if (isLoading || allLoaded) return;
+          isLoading = true;
+
+          const viewMoreBtn = document.getElementById("fp-view-more-btn");
+          if (viewMoreBtn) {
+            viewMoreBtn.disabled = true;
+            viewMoreBtn.classList.add("fp-view-more-btn-loading");
+            viewMoreBtn.innerHTML = `
+            <div class="fp-spinner" style="width:18px;height:18px;border-width:2px;"></div>
+            Loading...
+          `;
+          }
+
+          getTransactions({ offset: offset, limit: PER_PAGE })
+            .then(function (result) {
+              /* Remove skeleton on first load */
+              const skeleton = document.getElementById("fp-skeleton-rows");
+              if (skeleton) skeleton.remove();
+
+              renderTransactions(result.items);
+              offset += result.items.length;
+
+              if (!result.hasMore) {
+                allLoaded = true;
+                document
+                  .getElementById("fp-load-more-wrap")
+                  .classList.add("fp-hidden");
+                document
+                  .getElementById("fp-timeline-wrap")
+                  .classList.remove("fp-hidden");
+              } else {
+                document
+                  .getElementById("fp-load-more-wrap")
+                  .classList.remove("fp-hidden");
+                const btn = document.getElementById("fp-view-more-btn");
+                if (btn) {
+                  btn.disabled = false;
+                  btn.classList.remove("fp-view-more-btn-loading");
+                  const remaining = TOTAL_TXNS - offset;
+                  btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Load more <span style="opacity:.6;font-weight:400;">&nbsp;(${remaining} remaining)</span>
+              `;
+                }
+              }
+
+              isLoading = false;
+            })
+            .catch(function () {
+              isLoading = false;
+            });
+        }
+
+        /* ---- Initial load ---- */
+        loadPage();
+
+        /* ---- View more button ---- */
+        document
+          .getElementById("fp-txn-card")
+          .addEventListener("click", function (e) {
+            const btn = e.target.closest("#fp-view-more-btn");
+            if (btn) loadPage();
+          });
+
+        /* ---- Timeline link -> open statement modal ---- */
+        document
+          .getElementById("fp-timeline-wrap")
+          .addEventListener("click", function (e) {
+            const link = e.target.closest("#fp-timeline-link");
+            if (link) openStmtModal();
+          });
+
+        /* ================================================================ */
+        /*  STATEMENT MODAL                                                  */
+        /* ================================================================ */
+
+        function openStmtModal() {
+          /* Prefill email */
+          getUser()
+            .then(function (u) {
+              document.getElementById("fp-stmt-email").value = u.email;
+            })
+            .catch(function () {});
+
+          /* Set sensible date defaults */
+          const today = new Date();
+          const firstDay = new Date(today.getFullYear(), 0, 1);
+          document.getElementById("fp-stmt-from").value = firstDay
+            .toISOString()
+            .slice(0, 10);
+          document.getElementById("fp-stmt-to").value = today
+            .toISOString()
+            .slice(0, 10);
+
+          /* Reset to form view */
+          document
+            .getElementById("fp-stmt-form-view")
+            .classList.remove("fp-hidden");
+          document
+            .getElementById("fp-stmt-success-view")
+            .classList.add("fp-hidden");
+          clearStmtErrors();
+
+          openModal("fp-stmt-modal");
+        }
+
+        function clearStmtErrors() {
+          [
+            "fp-stmt-from-error",
+            "fp-stmt-to-error",
+            "fp-stmt-email-error",
+          ].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.textContent = "";
+              el.classList.add("fp-hidden");
+            }
+          });
+          const fe = document.getElementById("fp-stmt-form-error");
+          if (fe) {
+            fe.textContent = "";
+            fe.classList.add("fp-hidden");
+          }
+
+          ["fp-stmt-from", "fp-stmt-to", "fp-stmt-email"].forEach(
+            function (id) {
+              const el = document.getElementById(id);
+              if (el) el.classList.remove("fp-input-error");
+            },
+          );
+        }
+
+        function setStmtFieldError(fieldId, msg) {
+          const errEl = document.getElementById(fieldId + "-error");
+          const inputEl = document.getElementById(fieldId);
+          if (errEl) {
+            errEl.textContent = msg;
+            errEl.classList.toggle("fp-hidden", !msg);
+          }
+          if (inputEl) inputEl.classList.toggle("fp-input-error", !!msg);
+        }
+
+        /* Close button */
+        document
+          .getElementById("fp-stmt-modal-close")
+          .addEventListener("click", function () {
+            closeModal("fp-stmt-modal");
+          });
+
+        /* Done button */
+        document
+          .getElementById("fp-stmt-done-btn")
+          .addEventListener("click", function () {
+            closeModal("fp-stmt-modal");
+          });
+
+        /* ESC */
+        setupModalEsc("fp-stmt-modal");
+
+        /* Form submission */
+        document
+          .getElementById("fp-stmt-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            clearStmtErrors();
+
+            const from = document.getElementById("fp-stmt-from").value;
+            const to = document.getElementById("fp-stmt-to").value;
+            const email = document.getElementById("fp-stmt-email").value.trim();
+
+            let valid = true;
+
+            if (!from) {
+              setStmtFieldError("fp-stmt-from", "Please select a start date.");
+              valid = false;
+            }
+            if (!to) {
+              setStmtFieldError("fp-stmt-to", "Please select an end date.");
+              valid = false;
+            }
+            if (from && to && new Date(from) > new Date(to)) {
+              setStmtFieldError(
+                "fp-stmt-to",
+                "End date must be after start date.",
+              );
+              valid = false;
+            }
+            if (!email) {
+              setStmtFieldError(
+                "fp-stmt-email",
+                "Please enter an email address.",
+              );
+              valid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+              setStmtFieldError(
+                "fp-stmt-email",
+                "Please enter a valid email address.",
+              );
+              valid = false;
+            }
+
+            if (!valid) return;
+
+            const submitBtn = document.getElementById("fp-stmt-submit");
+            submitBtn.disabled = true;
+            submitBtn.classList.add("fp-btn-loading");
+            submitBtn.textContent = " ";
+
+            requestStatement({ from, to, email })
+              .then(function () {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("fp-btn-loading");
+                submitBtn.textContent = "Submit Request";
+
+                document
+                  .getElementById("fp-stmt-form-view")
+                  .classList.add("fp-hidden");
+                document
+                  .getElementById("fp-stmt-success-view")
+                  .classList.remove("fp-hidden");
+              })
+              .catch(function (err) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("fp-btn-loading");
+                submitBtn.textContent = "Submit Request";
+
+                const fe = document.getElementById("fp-stmt-form-error");
+                fe.textContent =
+                  err.message || "An error occurred. Please try again.";
+                fe.classList.remove("fp-hidden");
+              });
+          });
+      })();
+    </script>
+  </body>
+</html>

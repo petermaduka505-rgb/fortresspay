@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Support — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      /* ── Design tokens (mirror common.css) ── */
+      :root {
+        --fp-bg: #f4f6f9;
+        --fp-surface: #ffffff;
+        --fp-border: #e2e8f0;
+        --fp-text: #1a202c;
+        --fp-text-muted: #64748b;
+        --fp-accent: #1a56db;
+        --fp-accent-hover: #1648c0;
+        --fp-danger: #dc2626;
+        --fp-success: #16a34a;
+        --fp-success-bg: #dcfce7;
+        --fp-radius: 0.75rem;
+        --fp-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: var(--fp-bg);
+        color: var(--fp-text);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-bottom: 90px;
+      }
+
+      /* ── Layout ── */
+      .fp-page {
+        padding: 24px 0 32px;
+      }
+      .fp-container-wide {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+
+      /* ── Page heading ── */
+      .fp-page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--fp-text);
+        margin: 0 0 4px;
+      }
+      .fp-page-subtitle {
+        font-size: 0.9rem;
+        color: var(--fp-text-muted);
+        margin: 0 0 24px;
+      }
+
+      /* ── Cards ── */
+      .fp-section-card {
+        background: var(--fp-surface);
+        border: 1px solid var(--fp-border);
+        border-radius: var(--fp-radius);
+        box-shadow: var(--fp-shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .fp-section-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        background: #fafbfc;
+      }
+      .fp-section-card-title {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--fp-text);
+        margin: 0;
+        letter-spacing: 0.01em;
+      }
+      .fp-section-card-body {
+        padding: 0;
+      }
+
+      /* ── Search ── */
+      .fp-search-wrap {
+        position: relative;
+        margin-bottom: 20px;
+      }
+      .fp-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--fp-text-muted);
+        pointer-events: none;
+      }
+      .fp-search-input {
+        width: 100%;
+        padding: 12px 16px 12px 42px;
+        border: 1.5px solid var(--fp-border);
+        border-radius: var(--fp-radius);
+        font-size: 0.9375rem;
+        background: var(--fp-surface);
+        color: var(--fp-text);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        box-shadow: var(--fp-shadow);
+      }
+      .fp-search-input:focus {
+        border-color: var(--fp-accent);
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+      }
+      .fp-search-input::placeholder {
+        color: #94a3b8;
+      }
+
+      /* ── FAQ details ── */
+      .fp-faq-item {
+        border-bottom: 1px solid var(--fp-border);
+      }
+      .fp-faq-item:last-child {
+        border-bottom: none;
+      }
+      .fp-faq-item summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+        gap: 12px;
+      }
+      .fp-faq-item summary::-webkit-details-marker {
+        display: none;
+      }
+      .fp-faq-item summary:hover {
+        background: #f8fafc;
+      }
+      .fp-faq-chevron {
+        flex-shrink: 0;
+        color: var(--fp-text-muted);
+        transition: transform 0.2s;
+      }
+      .fp-faq-item[open] .fp-faq-chevron {
+        transform: rotate(180deg);
+      }
+      .fp-faq-body {
+        padding: 0 20px 16px;
+        font-size: 0.9rem;
+        color: var(--fp-text-muted);
+        line-height: 1.65;
+      }
+      .fp-faq-body p {
+        margin: 0 0 8px;
+      }
+      .fp-faq-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ── Contact items ── */
+      .fp-contact-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        gap: 12px;
+      }
+      .fp-contact-item:last-child {
+        border-bottom: none;
+      }
+      .fp-contact-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .fp-contact-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #eff6ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--fp-accent);
+      }
+      .fp-contact-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .fp-contact-sub {
+        font-size: 0.8rem;
+        color: var(--fp-text-muted);
+        margin-top: 1px;
+      }
+
+      /* ── Buttons ── */
+      .fp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          opacity 0.15s;
+        white-space: nowrap;
+      }
+      .fp-btn-primary {
+        background: var(--fp-accent);
+        color: #fff;
+      }
+      .fp-btn-primary:hover {
+        background: var(--fp-accent-hover);
+      }
+      .fp-btn-ghost {
+        background: transparent;
+        color: var(--fp-accent);
+        border: 1.5px solid var(--fp-accent);
+      }
+      .fp-btn-ghost:hover {
+        background: #eef3fd;
+      }
+      .fp-btn-sm {
+        padding: 5px 13px;
+        font-size: 0.8125rem;
+      }
+
+      .fp-link {
+        color: var(--fp-accent);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .fp-link:hover {
+        text-decoration: underline;
+      }
+
+      /* ── Message form ── */
+      .fp-form-body {
+        padding: 20px;
+      }
+      .fp-form-row {
+        margin-bottom: 16px;
+      }
+      .fp-form-row:last-child {
+        margin-bottom: 0;
+      }
+      .fp-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--fp-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+      }
+      .fp-input,
+      .fp-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--fp-border);
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        color: var(--fp-text);
+        background: var(--fp-surface);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        font-family: inherit;
+      }
+      .fp-input:focus,
+      .fp-textarea:focus {
+        border-color: var(--fp-accent);
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+      }
+      .fp-input[readonly] {
+        background: #f8fafc;
+        color: var(--fp-text-muted);
+        cursor: default;
+      }
+      .fp-textarea {
+        resize: vertical;
+        min-height: 110px;
+      }
+      .fp-form-row-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 520px) {
+        .fp-form-row-2col {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Subject select ── */
+      .fp-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--fp-border);
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        color: var(--fp-text);
+        background: var(--fp-surface);
+        outline: none;
+        cursor: pointer;
+        font-family: inherit;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+      }
+      .fp-select:focus {
+        border-color: var(--fp-accent);
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+      }
+
+      /* ── Success alert ── */
+      .fp-alert-success {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: var(--fp-success-bg);
+        border: 1px solid #86efac;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.875rem;
+        color: #166534;
+        margin-top: 16px;
+      }
+      .fp-alert-success svg {
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ── Availability chip ── */
+      .fp-avail {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--fp-success);
+        background: var(--fp-success-bg);
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+      .fp-avail-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--fp-success);
+      }
+      .fp-avail-off {
+        color: var(--fp-text-muted);
+        background: #f1f5f9;
+      }
+      .fp-avail-off .fp-avail-dot {
+        background: #94a3b8;
+      }
+
+      /* ── Hours table ── */
+      .fp-hours {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin-top: 6px;
+      }
+      .fp-hours td {
+        padding: 3px 0;
+        color: var(--fp-text-muted);
+      }
+      .fp-hours td:first-child {
+        font-weight: 600;
+        color: var(--fp-text);
+        width: 130px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container-wide">
+        <!-- Page heading -->
+        <h1 class="fp-page-title">Help Center</h1>
+        <p class="fp-page-subtitle">
+          Find answers, get help, and reach our support team.
+        </p>
+
+        <!-- ── Search ── -->
+        <div class="fp-search-wrap">
+          <span class="fp-search-icon">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M21 21l-4.35-4.35"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <input
+            type="search"
+            class="fp-search-input"
+            id="fp-faq-search"
+            placeholder="Search help articles..."
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- ── FAQ card ── -->
+        <div class="fp-section-card" id="fp-faq-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Frequently Asked Questions</h2>
+            <span
+              id="fp-faq-count"
+              style="font-size: 0.8rem; color: var(--fp-text-muted)"
+            ></span>
+          </div>
+          <div class="fp-section-card-body" id="fp-faq-list">
+            <details class="fp-faq-item">
+              <summary>
+                How do I send money to another account?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  To send money, navigate to the
+                  <strong>Transfer</strong> section from the bottom navigation.
+                  Enter the recipient's account number and routing number,
+                  specify the amount, and confirm your transfer.
+                </p>
+                <p>
+                  Transfers between Fortress Pay accounts are typically instant.
+                  External bank transfers settle within 1–3 business days
+                  depending on the receiving institution.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                Why is my account showing a restricted status?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  Accounts may be temporarily restricted due to unusual
+                  activity, a pending identity verification, or a compliance
+                  review. During a restriction, certain features such as
+                  outbound transfers may be unavailable.
+                </p>
+                <p>
+                  Please contact our support team via secure message or phone to
+                  resolve the restriction. Have your account number and a valid
+                  government-issued ID ready.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                How long does it take for a deposit to become available?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  Direct deposits are typically available the same day they are
+                  received, often before standard banking hours. ACH transfers
+                  initiated externally are available within 1–2 business days.
+                </p>
+                <p>
+                  Check deposits made via mobile capture may have a hold period
+                  of up to 5 business days for new accounts or large amounts.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                How do I update my contact information?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  To update your email address or phone number, visit the
+                  <strong>Profile</strong> page. Changes to your primary email
+                  require re-verification for security purposes.
+                </p>
+                <p>
+                  For address changes, please contact our support team as
+                  identity verification may be required before the update is
+                  applied.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                What should I do if I notice an unauthorized transaction?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  If you see a transaction you do not recognize, contact us
+                  immediately via phone or secure message. You can also lock
+                  your account from the Profile page under Security while you
+                  investigate.
+                </p>
+                <p>
+                  You have 60 days from the date of a statement to dispute
+                  unauthorized transactions. We will initiate a provisional
+                  credit while we investigate your claim.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                How do I set up two-factor authentication?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  Two-factor authentication (2FA) can be configured under
+                  <strong>Profile &gt; Security</strong>. We support SMS-based
+                  verification. Once enabled, a one-time code will be required
+                  each time you sign in from an unrecognized device.
+                </p>
+                <p>
+                  We strongly recommend enabling 2FA to protect your account
+                  from unauthorized access.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                Can I link an external bank account?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  Yes. Navigate to
+                  <strong>Transfers &gt; Linked Accounts</strong> and enter your
+                  external bank's routing and account number. We will send two
+                  small verification deposits within 1–2 business days which you
+                  must confirm to activate the link.
+                </p>
+                <p>
+                  Linked external accounts can be used for funding and
+                  withdrawals subject to your daily transfer limits.
+                </p>
+              </div>
+            </details>
+
+            <details class="fp-faq-item">
+              <summary>
+                What are the daily transfer limits?
+                <svg
+                  class="fp-faq-chevron"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6 9l6 6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <div class="fp-faq-body">
+                <p>
+                  Standard accounts have a daily outbound transfer limit of
+                  $5,000 and a 30-day rolling limit of $25,000. Limits may
+                  differ based on your account tier and verification status.
+                </p>
+                <p>
+                  To request a limit increase, submit a request through secure
+                  message. Additional verification may be required.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- No results message (hidden by default) -->
+        <div
+          id="fp-faq-no-results"
+          style="
+            display: none;
+            text-align: center;
+            padding: 32px 20px;
+            background: var(--fp-surface);
+            border: 1px solid var(--fp-border);
+            border-radius: var(--fp-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--fp-shadow);
+          "
+        >
+          <svg
+            width="40"
+            height="40"
+            fill="none"
+            viewBox="0 0 24 24"
+            style="color: #cbd5e1; margin: 0 auto 12px; display: block"
+          >
+            <circle
+              cx="11"
+              cy="11"
+              r="8"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+          <p style="font-size: 0.9375rem; font-weight: 600; margin: 0 0 4px">
+            No results found
+          </p>
+          <p
+            style="font-size: 0.875rem; color: var(--fp-text-muted); margin: 0"
+          >
+            Try a different search term or browse the questions above.
+          </p>
+        </div>
+
+        <!-- ── Contact options card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Contact Options</h2>
+          </div>
+          <div class="fp-section-card-body">
+            <!-- Secure message -->
+            <div class="fp-contact-item">
+              <div class="fp-contact-left">
+                <div class="fp-contact-icon">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-contact-label">Secure Message</div>
+                  <div class="fp-contact-sub">
+                    In-app encrypted messaging — response within 24 hours
+                  </div>
+                </div>
+              </div>
+              <span class="fp-avail"
+                ><span class="fp-avail-dot"></span>Available</span
+              >
+            </div>
+
+            <!-- Phone -->
+            <div class="fp-contact-item">
+              <div class="fp-contact-left">
+                <div class="fp-contact-icon">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.27 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.18 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-contact-label">Phone Support</div>
+                  <div class="fp-contact-sub">
+                    1-800-555-0192 — Mon–Fri 8 AM to 8 PM ET
+                  </div>
+                  <table class="fp-hours" style="margin-top: 4px">
+                    <tr>
+                      <td>Mon – Fri</td>
+                      <td>8:00 AM – 8:00 PM ET</td>
+                    </tr>
+                    <tr>
+                      <td>Saturday</td>
+                      <td>9:00 AM – 5:00 PM ET</td>
+                    </tr>
+                    <tr>
+                      <td>Sunday</td>
+                      <td>Closed</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <span class="fp-avail"
+                ><span class="fp-avail-dot"></span>Open now</span
+              >
+            </div>
+
+            <!-- Email -->
+            <div class="fp-contact-item">
+              <div class="fp-contact-left">
+                <div class="fp-contact-icon">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <rect
+                      x="2"
+                      y="4"
+                      width="20"
+                      height="16"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M2 7l10 7 10-7"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-contact-label">Email</div>
+                  <div class="fp-contact-sub">
+                    support@fortresspay.com — response within 1–2 business days
+                  </div>
+                </div>
+              </div>
+              <span class="fp-avail"
+                ><span class="fp-avail-dot"></span>Available</span
+              >
+            </div>
+
+            <!-- Live chat -->
+            <div class="fp-contact-item">
+              <div class="fp-contact-left">
+                <div class="fp-contact-icon">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-contact-label">Live Chat</div>
+                  <div class="fp-contact-sub">
+                    Real-time support — available during phone hours
+                  </div>
+                </div>
+              </div>
+              <span class="fp-avail"
+                ><span class="fp-avail-dot"></span>Online</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Send a secure message card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Send a Secure Message</h2>
+          </div>
+          <div class="fp-section-card-body">
+            <form class="fp-form-body" id="fp-support-form" novalidate>
+              <div class="fp-form-row fp-form-row-2col">
+                <div>
+                  <label class="fp-label" for="fp-msg-name">Full Name</label>
+                  <input
+                    type="text"
+                    class="fp-input"
+                    id="fp-msg-name"
+                    readonly
+                    placeholder="Loading..."
+                  />
+                </div>
+                <div>
+                  <label class="fp-label" for="fp-msg-email"
+                    >Email Address</label
+                  >
+                  <input
+                    type="email"
+                    class="fp-input"
+                    id="fp-msg-email"
+                    readonly
+                    placeholder="Loading..."
+                  />
+                </div>
+              </div>
+
+              <div class="fp-form-row">
+                <label class="fp-label" for="fp-msg-subject">Subject</label>
+                <select class="fp-select" id="fp-msg-subject">
+                  <option value="">Select a topic...</option>
+                  <option>Account Access Issue</option>
+                  <option>Transaction Dispute</option>
+                  <option>Transfer or Payment Help</option>
+                  <option>Account Restriction Inquiry</option>
+                  <option>Identity Verification</option>
+                  <option>Linked Account Help</option>
+                  <option>Statement or Document Request</option>
+                  <option>Security Concern</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="fp-form-row">
+                <label class="fp-label" for="fp-msg-body">Message</label>
+                <textarea
+                  class="fp-textarea"
+                  id="fp-msg-body"
+                  placeholder="Describe your question or issue in detail. Include any relevant transaction dates or amounts."
+                ></textarea>
+              </div>
+
+              <div class="fp-form-row" style="margin-top: 4px">
+                <button
+                  type="submit"
+                  class="fp-btn fp-btn-primary"
+                  id="fp-submit-btn"
+                >
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Send Message
+                </button>
+              </div>
+
+              <div
+                id="fp-form-error"
+                style="
+                  display: none;
+                  margin-top: 12px;
+                  color: var(--fp-danger);
+                  font-size: 0.875rem;
+                  font-weight: 500;
+                "
+              ></div>
+              <div
+                id="fp-form-success"
+                class="fp-alert-success"
+                style="display: none"
+              >
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="#16a34a"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M8 12l3 3 5-5"
+                    stroke="#16a34a"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <div>
+                  <strong>Message received.</strong> Our team will review your
+                  request and respond to your email within 1–2 business days. A
+                  reference number has been sent to your inbox.
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("support")) return;
+
+        /* ── Prefill name & email from user ── */
+        getUser()
+          .then(function (u) {
+            const name = [u.firstName, u.lastName].filter(Boolean).join(" ");
+            const email = u.email || "";
+            if (name) document.getElementById("fp-msg-name").value = name;
+            if (email) document.getElementById("fp-msg-email").value = email;
+          })
+          .catch(function () {
+            // Non-critical; leave fields blank for manual input
+            document.getElementById("fp-msg-name").removeAttribute("readonly");
+            document.getElementById("fp-msg-email").removeAttribute("readonly");
+          });
+
+        /* ── FAQ search ── */
+        var faqItems = Array.from(document.querySelectorAll(".fp-faq-item"));
+        var faqCount = document.getElementById("fp-faq-count");
+        var noResults = document.getElementById("fp-faq-no-results");
+        var faqCard = document.getElementById("fp-faq-card");
+
+        function updateFaqCount(visible) {
+          faqCount.textContent =
+            visible + " of " + faqItems.length + " questions";
+        }
+        updateFaqCount(faqItems.length);
+
+        document
+          .getElementById("fp-faq-search")
+          .addEventListener("input", function () {
+            var q = this.value.trim().toLowerCase();
+            var visible = 0;
+
+            faqItems.forEach(function (item) {
+              var text = item.textContent.toLowerCase();
+              var match = !q || text.indexOf(q) !== -1;
+              item.style.display = match ? "" : "none";
+              if (match) visible++;
+            });
+
+            updateFaqCount(visible);
+
+            if (visible === 0 && q) {
+              faqCard.style.display = "none";
+              noResults.style.display = "block";
+            } else {
+              faqCard.style.display = "";
+              noResults.style.display = "none";
+            }
+          });
+
+        /* ── Secure message form ── */
+        var form = document.getElementById("fp-support-form");
+        var submitBtn = document.getElementById("fp-submit-btn");
+        var errorEl = document.getElementById("fp-form-error");
+        var successEl = document.getElementById("fp-form-success");
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          errorEl.style.display = "none";
+          successEl.style.display = "none";
+
+          var subject = document.getElementById("fp-msg-subject").value.trim();
+          var body = document.getElementById("fp-msg-body").value.trim();
+
+          if (!subject) {
+            errorEl.textContent = "Please select a subject before sending.";
+            errorEl.style.display = "block";
+            return;
+          }
+          if (body.length < 10) {
+            errorEl.textContent =
+              "Please enter a message of at least 10 characters.";
+            errorEl.style.display = "block";
+            return;
+          }
+
+          /* Simulate submission */
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Sending...";
+
+          setTimeout(function () {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = [
+              '<svg width="16" height="16" fill="none" viewBox="0 0 24 24">',
+              '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+              "</svg> Send Message",
+            ].join("");
+
+            /* Reset only message fields, keep name/email and subject for reference */
+            document.getElementById("fp-msg-body").value = "";
+            document.getElementById("fp-msg-subject").value = "";
+
+            successEl.style.display = "flex";
+            successEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 1000);
+        });
+      })();
+    </script>
+  </body>
+</html>

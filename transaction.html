@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Transaction Detail — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-txn-detail-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius-lg);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow-md);
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .fp-txn-hero {
+        text-align: center;
+        padding: 36px 24px 28px;
+        border-bottom: 1px solid var(--fp-gray-100);
+        background: linear-gradient(
+          160deg,
+          var(--fp-gray-50) 0%,
+          var(--fp-white) 100%
+        );
+      }
+
+      .fp-txn-hero-icon {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: var(--fp-green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-green);
+        margin: 0 auto 18px;
+        box-shadow: 0 0 0 8px rgba(5, 150, 105, 0.08);
+      }
+
+      .fp-txn-hero-type {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--fp-green);
+        margin-bottom: 8px;
+      }
+
+      .fp-txn-hero-amount {
+        font-size: 2.6rem;
+        font-weight: 800;
+        color: var(--fp-gray-900);
+        letter-spacing: -1.5px;
+        line-height: 1.1;
+        margin-bottom: 10px;
+      }
+
+      .fp-txn-hero-amount span.plus {
+        color: var(--fp-green);
+      }
+
+      .fp-txn-hero-date {
+        font-size: 0.875rem;
+        color: var(--fp-gray-500);
+      }
+
+      .fp-txn-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .fp-detail-section {
+        padding: 20px;
+        border-bottom: 1px solid var(--fp-gray-100);
+      }
+      .fp-detail-section:last-child {
+        border-bottom: none;
+      }
+
+      .fp-detail-section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--fp-gray-400);
+        margin-bottom: 14px;
+      }
+
+      .fp-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--fp-gray-50);
+        gap: 16px;
+      }
+      .fp-detail-row:last-child {
+        border-bottom: none;
+      }
+
+      .fp-detail-label {
+        font-size: 0.84rem;
+        color: var(--fp-gray-500);
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+
+      .fp-detail-value {
+        font-size: 0.9rem;
+        color: var(--fp-gray-900);
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
+      }
+
+      .fp-detail-value.mono {
+        font-family: "SF Mono", "Fira Mono", "Courier New", monospace;
+        font-size: 0.83rem;
+        letter-spacing: 0.3px;
+      }
+
+      /* Print button */
+      .fp-print-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--fp-gray-600);
+        padding: 8px 14px;
+        border-radius: var(--fp-radius-sm);
+        border: 1.5px solid var(--fp-gray-200);
+        background: var(--fp-white);
+        transition:
+          background var(--fp-transition),
+          border-color var(--fp-transition);
+      }
+      .fp-print-btn:hover {
+        background: var(--fp-gray-100);
+        border-color: var(--fp-gray-300);
+      }
+
+      /* Error state */
+      .fp-txn-error-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius-lg);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow);
+        padding: 48px 24px;
+        text-align: center;
+      }
+      .fp-txn-error-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--fp-gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-gray-400);
+        margin: 0 auto 20px;
+      }
+      .fp-txn-error-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--fp-gray-800);
+        margin-bottom: 8px;
+      }
+      .fp-txn-error-text {
+        font-size: 0.875rem;
+        color: var(--fp-gray-500);
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+
+      /* Skeleton states */
+      .fp-txn-hero-sk {
+        padding: 36px 24px 28px;
+        border-bottom: 1px solid var(--fp-gray-100);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      @media print {
+        #fp-header,
+        #fp-bottom-nav,
+        .fp-back-btn,
+        .fp-print-btn,
+        .fp-page-header {
+          display: none !important;
+        }
+        .fp-page {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+        .fp-txn-detail-card {
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container">
+        <!-- Page header -->
+        <div class="fp-page-header">
+          <a
+            href="activity.html"
+            class="fp-back-btn"
+            aria-label="Back to activity"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M19 12H5M5 12l7 7M5 12l7-7"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <div style="flex: 1">
+            <h1 class="fp-page-title">Transaction Detail</h1>
+            <p class="fp-page-subtitle" id="fp-txn-ref-sub">
+              Loading reference...
+            </p>
+          </div>
+          <button
+            class="fp-print-btn"
+            onclick="window.print()"
+            aria-label="Print transaction"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Print
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div id="fp-txn-content">
+          <!-- Skeleton -->
+          <div class="fp-txn-detail-card" id="fp-txn-skeleton">
+            <div class="fp-txn-hero-sk">
+              <div
+                class="fp-skeleton"
+                style="width: 68px; height: 68px; border-radius: 50%"
+              ></div>
+              <div
+                class="fp-skeleton"
+                style="width: 60px; height: 14px; border-radius: 4px"
+              ></div>
+              <div
+                class="fp-skeleton"
+                style="width: 200px; height: 40px; border-radius: 6px"
+              ></div>
+              <div
+                class="fp-skeleton"
+                style="width: 140px; height: 14px; border-radius: 4px"
+              ></div>
+            </div>
+            <div class="fp-detail-section">
+              ${[...Array(4)].map(() => `
+              <div class="fp-detail-row">
+                <div
+                  class="fp-skeleton"
+                  style="width: 110px; height: 13px; border-radius: 4px"
+                ></div>
+                <div
+                  class="fp-skeleton"
+                  style="width: 150px; height: 13px; border-radius: 4px"
+                ></div>
+              </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("activity")) return;
+
+        /* ---- Read query string ---- */
+        const params = new URLSearchParams(window.location.search);
+        const txnId = params.get("id");
+
+        function showError(title, msg) {
+          document.getElementById("fp-txn-ref-sub").textContent = "Not found";
+          document.getElementById("fp-txn-content").innerHTML = `
+          <div class="fp-txn-error-card">
+            <div class="fp-txn-error-icon">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="fp-txn-error-title">${title}</p>
+            <p class="fp-txn-error-text">${msg}</p>
+            <a href="activity.html" class="fp-btn fp-btn-primary">
+              Back to Activity
+            </a>
+          </div>
+        `;
+        }
+
+        if (!txnId) {
+          showError(
+            "No Transaction Specified",
+            "A transaction ID is required to view this page. Please navigate here from your activity list.",
+          );
+          return;
+        }
+
+        /* ---- Load transaction ---- */
+        getTransactionById(txnId)
+          .then(function (t) {
+            document.title = "Transaction " + t.reference + " — Fortress Pay";
+            document.getElementById("fp-txn-ref-sub").textContent =
+              "Ref: " + t.reference;
+
+            const amt = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2,
+            }).format(t.amount);
+
+            document.getElementById("fp-txn-content").innerHTML = `
+            <div class="fp-txn-detail-card">
+
+              <!-- Hero -->
+              <div class="fp-txn-hero">
+                <div class="fp-txn-hero-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <p class="fp-txn-hero-type">Credit Received</p>
+                <p class="fp-txn-hero-amount"><span class="plus">+</span>${amt}</p>
+                <p class="fp-txn-hero-date">${t.date} at ${t.time}</p>
+                <div class="fp-txn-status-row">
+                  <span class="fp-badge-status fp-badge-completed">${t.status}</span>
+                </div>
+              </div>
+
+              <!-- Transaction info -->
+              <div class="fp-detail-section">
+                <p class="fp-detail-section-title">Transaction Information</p>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Reference</span>
+                  <span class="fp-detail-value mono">${t.reference}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Transaction ID</span>
+                  <span class="fp-detail-value mono">${t.id}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Date</span>
+                  <span class="fp-detail-value">${t.date}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Time</span>
+                  <span class="fp-detail-value">${t.time} UTC</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Status</span>
+                  <span class="fp-detail-value">
+                    <span class="fp-badge-status fp-badge-completed">${t.status}</span>
+                  </span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Type</span>
+                  <span class="fp-detail-value">${t.type}</span>
+                </div>
+              </div>
+
+              <!-- Amount & method -->
+              <div class="fp-detail-section">
+                <p class="fp-detail-section-title">Amount &amp; Method</p>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Amount</span>
+                  <span class="fp-detail-value" style="color:var(--fp-green);font-size:1rem;">+${amt}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Currency</span>
+                  <span class="fp-detail-value">${t.currency}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Method</span>
+                  <span class="fp-detail-value">${t.method}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Memo</span>
+                  <span class="fp-detail-value">${t.memo}</span>
+                </div>
+              </div>
+
+              <!-- Sender info -->
+              <div class="fp-detail-section">
+                <p class="fp-detail-section-title">Sender Details</p>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Sender Name</span>
+                  <span class="fp-detail-value">${t.sender}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Sender Account</span>
+                  <span class="fp-detail-value mono">${t.senderAccount}</span>
+                </div>
+                <div class="fp-detail-row">
+                  <span class="fp-detail-label">Transfer Method</span>
+                  <span class="fp-detail-value">${t.method}</span>
+                </div>
+              </div>
+
+              <!-- Account info -->
+              <div class="fp-detail-section">
+                <p class="fp-detail-section-title">Recipient Account</p>
+                <div id="fp-recip-rows">
+                  <div class="fp-detail-row">
+                    <span class="fp-detail-label">Account Type</span>
+                    <span class="fp-detail-value fp-skeleton" style="width:160px;height:14px;border-radius:4px;">&nbsp;</span>
+                  </div>
+                  <div class="fp-detail-row">
+                    <span class="fp-detail-label">Account No.</span>
+                    <span class="fp-detail-value fp-skeleton" style="width:130px;height:14px;border-radius:4px;">&nbsp;</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Download notice -->
+            <div class="fp-alert fp-alert-info" style="margin-bottom:20px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>
+                To download a formal record of this transaction, please
+                <a href="statements.html" style="font-weight:700;text-decoration:underline;">request an account statement</a>.
+              </span>
+            </div>
+          `;
+
+            /* Fill recipient account info async */
+            getUser()
+              .then(function (u) {
+                document.getElementById("fp-recip-rows").innerHTML = `
+              <div class="fp-detail-row">
+                <span class="fp-detail-label">Account Type</span>
+                <span class="fp-detail-value">${u.accountType}</span>
+              </div>
+              <div class="fp-detail-row">
+                <span class="fp-detail-label">Account No.</span>
+                <span class="fp-detail-value mono">${u.accountNumber}</span>
+              </div>
+            `;
+              })
+              .catch(function () {});
+          })
+          .catch(function (err) {
+            showError(
+              "Transaction Not Found",
+              err.message ||
+                "The transaction you are looking for does not exist or may have been removed. Please return to your activity list.",
+            );
+          });
+      })();
+    </script>
+  </body>
+</html>

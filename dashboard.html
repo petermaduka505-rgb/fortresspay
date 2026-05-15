@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Dashboard — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-dashboard-greeting {
+        margin-bottom: 20px;
+      }
+      .fp-greeting-sub {
+        font-size: 0.85rem;
+        color: var(--fp-gray-500);
+        margin-top: 2px;
+      }
+      .fp-greeting-name {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--fp-gray-900);
+        letter-spacing: -0.3px;
+      }
+
+      .fp-balance-skeleton {
+        height: 160px;
+        border-radius: var(--fp-radius-lg);
+      }
+
+      .fp-restricted-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fecaca;
+        margin-top: 16px;
+      }
+      .fp-restricted-pill-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fca5a5;
+        flex-shrink: 0;
+      }
+
+      .fp-account-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+      }
+
+      .fp-quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      @media (max-width: 400px) {
+        .fp-quick-actions-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .fp-section-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow);
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .fp-section-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--fp-gray-100);
+      }
+
+      .fp-section-card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--fp-gray-800);
+      }
+
+      .fp-txn-skeleton-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fp-gray-100);
+      }
+      .fp-txn-skeleton-item:last-child {
+        border-bottom: none;
+      }
+      .fp-txn-sk-circle {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .fp-txn-sk-lines {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .fp-txn-sk-line1 {
+        height: 13px;
+        width: 60%;
+      }
+      .fp-txn-sk-line2 {
+        height: 11px;
+        width: 40%;
+      }
+      .fp-txn-sk-amount {
+        width: 70px;
+        height: 14px;
+        border-radius: 6px;
+      }
+
+      .fp-account-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      .fp-account-info-item {
+        padding: 14px 20px;
+        border-right: 1px solid var(--fp-gray-100);
+        border-bottom: 1px solid var(--fp-gray-100);
+      }
+      .fp-account-info-item:nth-child(2n) {
+        border-right: none;
+      }
+      .fp-account-info-item:nth-last-child(-n + 2) {
+        border-bottom: none;
+      }
+      .fp-account-info-label {
+        font-size: 0.75rem;
+        color: var(--fp-gray-500);
+        font-weight: 500;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .fp-account-info-val {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+      }
+
+      .fp-desktop-two-col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      @media (min-width: 768px) {
+        .fp-desktop-two-col {
+          grid-template-columns: 1fr 340px;
+          align-items: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container-wide">
+        <!-- Greeting -->
+        <div class="fp-dashboard-greeting" id="fp-greeting">
+          <p class="fp-greeting-sub">Good day,</p>
+          <p
+            class="fp-greeting-name fp-skeleton"
+            style="width: 180px; height: 28px; border-radius: 6px"
+          >
+            &nbsp;
+          </p>
+        </div>
+
+        <div class="fp-desktop-two-col">
+          <!-- Left column -->
+          <div>
+            <!-- Balance card -->
+            <div class="fp-mb-20" id="fp-balance-wrap">
+              <div class="fp-balance-skeleton fp-skeleton"></div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="fp-mb-20">
+              <div class="fp-quick-actions-grid">
+                <a href="transfer.html" class="fp-quick-action">
+                  <div class="fp-quick-action-icon">
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span>Transfer</span>
+                </a>
+                <a href="pay.html" class="fp-quick-action">
+                  <div class="fp-quick-action-icon">
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <rect
+                        x="2"
+                        y="5"
+                        width="20"
+                        height="14"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                      <path
+                        d="M2 10h20"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                      <path
+                        d="M6 15h4"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                      <circle cx="17" cy="15" r="1.5" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <span>Pay</span>
+                </a>
+                <a href="statements.html" class="fp-quick-action">
+                  <div class="fp-quick-action-icon">
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M14 2v6h6M16 13H8M16 17H8M10 9H8"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span>Statements</span>
+                </a>
+                <a href="support.html" class="fp-quick-action">
+                  <div class="fp-quick-action-icon">
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                      <path
+                        d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span>Support</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Recent activity -->
+            <div class="fp-section-card" id="fp-recent-card">
+              <div class="fp-section-card-header">
+                <span class="fp-section-card-title">Recent Activity</span>
+                <a href="activity.html" class="fp-link">View all</a>
+              </div>
+              <!-- Skeleton -->
+              <div id="fp-txn-skeleton">
+                <div class="fp-txn-skeleton-item">
+                  <div class="fp-txn-sk-circle fp-skeleton"></div>
+                  <div class="fp-txn-sk-lines">
+                    <div class="fp-txn-sk-line1 fp-skeleton"></div>
+                    <div class="fp-txn-sk-line2 fp-skeleton"></div>
+                  </div>
+                  <div class="fp-txn-sk-amount fp-skeleton"></div>
+                </div>
+                <div class="fp-txn-skeleton-item">
+                  <div class="fp-txn-sk-circle fp-skeleton"></div>
+                  <div class="fp-txn-sk-lines">
+                    <div class="fp-txn-sk-line1 fp-skeleton"></div>
+                    <div class="fp-txn-sk-line2 fp-skeleton"></div>
+                  </div>
+                  <div class="fp-txn-sk-amount fp-skeleton"></div>
+                </div>
+                <div class="fp-txn-skeleton-item">
+                  <div class="fp-txn-sk-circle fp-skeleton"></div>
+                  <div class="fp-txn-sk-lines">
+                    <div class="fp-txn-sk-line1 fp-skeleton"></div>
+                    <div class="fp-txn-sk-line2 fp-skeleton"></div>
+                  </div>
+                  <div class="fp-txn-sk-amount fp-skeleton"></div>
+                </div>
+              </div>
+              <div class="fp-txn-list fp-hidden" id="fp-txn-list"></div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div>
+            <!-- Account info card -->
+            <div class="fp-section-card fp-mb-20" id="fp-account-card">
+              <div class="fp-section-card-header">
+                <span class="fp-section-card-title">Account Details</span>
+              </div>
+              <div class="fp-account-info-grid" id="fp-account-grid">
+                <!-- Populated by JS -->
+                <div class="fp-account-info-item">
+                  <div class="fp-account-info-label">Account No.</div>
+                  <div
+                    class="fp-account-info-val fp-skeleton"
+                    style="height: 16px; width: 80%; border-radius: 4px"
+                  >
+                    &nbsp;
+                  </div>
+                </div>
+                <div class="fp-account-info-item">
+                  <div class="fp-account-info-label">Account Type</div>
+                  <div
+                    class="fp-account-info-val fp-skeleton"
+                    style="height: 16px; width: 80%; border-radius: 4px"
+                  >
+                    &nbsp;
+                  </div>
+                </div>
+                <div class="fp-account-info-item">
+                  <div class="fp-account-info-label">Routing No.</div>
+                  <div
+                    class="fp-account-info-val fp-skeleton"
+                    style="height: 16px; width: 70%; border-radius: 4px"
+                  >
+                    &nbsp;
+                  </div>
+                </div>
+                <div class="fp-account-info-item">
+                  <div class="fp-account-info-label">Member Since</div>
+                  <div
+                    class="fp-account-info-val fp-skeleton"
+                    style="height: 16px; width: 70%; border-radius: 4px"
+                  >
+                    &nbsp;
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Restriction notice -->
+            <div class="fp-section-card fp-hidden" id="fp-restriction-card">
+              <div
+                class="fp-section-card-header"
+                style="
+                  background: var(--fp-red-light);
+                  border-bottom-color: #fca5a5;
+                "
+              >
+                <span class="fp-section-card-title" style="color: #991b1b"
+                  >Account Restriction</span
+                >
+              </div>
+              <div style="padding: 16px 20px">
+                <p
+                  style="font-size: 0.875rem; color: #7f1d1d; line-height: 1.6"
+                >
+                  Outgoing transfers and payments are unavailable from your
+                  current geographical location. This account supports outgoing
+                  activity only within domestic U.S. borders. Incoming bank
+                  transfer credits will continue to be processed normally.
+                </p>
+                <p style="font-size: 0.8rem; color: #9f1239; margin-top: 10px">
+                  For assistance, please contact our support team.
+                </p>
+                <a
+                  href="support.html"
+                  class="fp-btn fp-btn-sm"
+                  style="
+                    margin-top: 14px;
+                    background: #991b1b;
+                    color: #fff;
+                    display: inline-flex;
+                  "
+                >
+                  Contact Support
+                </a>
+              </div>
+            </div>
+
+            <!-- Security card -->
+            <div class="fp-section-card">
+              <div class="fp-section-card-header">
+                <span class="fp-section-card-title">Security</span>
+              </div>
+              <div
+                style="
+                  padding: 16px 20px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <div
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      background: var(--fp-green-light);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--fp-green);
+                      flex-shrink: 0;
+                    "
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        color: var(--fp-gray-900);
+                      "
+                    >
+                      256-bit Encryption
+                    </p>
+                    <p style="font-size: 0.78rem; color: var(--fp-gray-500)">
+                      Your data is fully encrypted
+                    </p>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <div
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      background: var(--fp-green-light);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--fp-green);
+                      flex-shrink: 0;
+                    "
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <rect
+                        x="5"
+                        y="11"
+                        width="14"
+                        height="10"
+                        rx="2"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                      <path
+                        d="M8 11V7a4 4 0 018 0v4"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        color: var(--fp-gray-900);
+                      "
+                    >
+                      Session Protected
+                    </p>
+                    <p style="font-size: 0.78rem; color: var(--fp-gray-500)">
+                      Auto-logout on inactivity
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <!-- Desktop nav injected into header via common.js -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("dashboard")) return;
+
+        /* ---- Greeting ---- */
+        getUser()
+          .then(function (u) {
+            const greetEl = document.getElementById("fp-greeting");
+            const hour = new Date().getHours();
+            let timeGreet = "Good morning";
+            if (hour >= 12 && hour < 17) timeGreet = "Good afternoon";
+            else if (hour >= 17) timeGreet = "Good evening";
+
+            greetEl.innerHTML = `
+          <p class="fp-greeting-sub">${timeGreet},</p>
+          <p class="fp-greeting-name">${u.firstName} ${u.lastName}</p>
+        `;
+
+            /* Account details */
+            if (u.restricted) {
+              document
+                .getElementById("fp-restriction-card")
+                .classList.remove("fp-hidden");
+            }
+
+            document.getElementById("fp-account-grid").innerHTML = `
+          <div class="fp-account-info-item">
+            <div class="fp-account-info-label">Account No.</div>
+            <div class="fp-account-info-val">${u.accountNumber}</div>
+          </div>
+          <div class="fp-account-info-item">
+            <div class="fp-account-info-label">Account Type</div>
+            <div class="fp-account-info-val">${u.accountType}</div>
+          </div>
+          <div class="fp-account-info-item">
+            <div class="fp-account-info-label">Routing No.</div>
+            <div class="fp-account-info-val">${u.routingNumber}</div>
+          </div>
+          <div class="fp-account-info-item">
+            <div class="fp-account-info-label">Member Since</div>
+            <div class="fp-account-info-val">${u.memberSince}</div>
+          </div>
+        `;
+          })
+          .catch(function () {});
+
+        /* ---- Balance card ---- */
+        Promise.all([getBalance(), getUser()])
+          .then(function (results) {
+            const balance = results[0];
+            const u = results[1];
+
+            const formatted = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2,
+            }).format(balance);
+
+            const restrictedPill = u.restricted
+              ? `<div class="fp-restricted-pill"><span class="fp-restricted-pill-dot"></span>Transfers: U.S. only</div>`
+              : "";
+
+            document.getElementById("fp-balance-wrap").innerHTML = `
+          <div class="fp-balance-card">
+            <p class="fp-balance-label">Available Balance</p>
+            <p class="fp-balance-amount">${formatted}</p>
+            <div class="fp-balance-meta">
+              <div class="fp-balance-meta-item">
+                Account
+                <strong><span class="fp-account-chip">${u.accountType}</span></strong>
+              </div>
+              <div class="fp-balance-meta-item">
+                Account No.
+                <strong>${u.accountNumber}</strong>
+              </div>
+            </div>
+            ${restrictedPill}
+          </div>
+        `;
+          })
+          .catch(function () {});
+
+        /* ---- Recent transactions ---- */
+        getTransactions({ offset: 0, limit: 3 })
+          .then(function (result) {
+            document
+              .getElementById("fp-txn-skeleton")
+              .classList.add("fp-hidden");
+            const list = document.getElementById("fp-txn-list");
+            list.classList.remove("fp-hidden");
+
+            if (!result.items.length) {
+              list.innerHTML = `
+            <div class="fp-empty">
+              <div class="fp-empty-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <p class="fp-empty-text">No transactions yet.</p>
+            </div>
+          `;
+              return;
+            }
+
+            list.innerHTML = result.items
+              .map(function (t) {
+                const amt = new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(t.amount);
+
+                return `
+            <a href="transaction.html?id=${encodeURIComponent(t.id)}" class="fp-txn-item">
+              <div class="fp-txn-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="fp-txn-info">
+                <p class="fp-txn-name">${t.sender}</p>
+                <p class="fp-txn-meta">${t.date} &middot; ${t.method}</p>
+              </div>
+              <div>
+                <p class="fp-txn-amount">+${amt}</p>
+              </div>
+              <div class="fp-txn-chevron">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </a>
+          `;
+              })
+              .join("");
+
+            /* View all row */
+            list.innerHTML += `
+          <a href="activity.html" class="fp-txn-item" style="justify-content:center;color:var(--fp-blue);font-size:0.875rem;font-weight:600;gap:6px;">
+            View all transactions
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        `;
+          })
+          .catch(function () {});
+      })();
+    </script>
+  </body>
+</html>

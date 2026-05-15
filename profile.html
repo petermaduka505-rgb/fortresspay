@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Profile — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      /* ── Design tokens (mirror common.css) ── */
+      :root {
+        --fp-bg: #f4f6f9;
+        --fp-surface: #ffffff;
+        --fp-border: #e2e8f0;
+        --fp-text: #1a202c;
+        --fp-text-muted: #64748b;
+        --fp-accent: #1a56db;
+        --fp-accent-hover: #1648c0;
+        --fp-danger: #dc2626;
+        --fp-warning-bg: #fef3c7;
+        --fp-warning-text: #92400e;
+        --fp-success: #16a34a;
+        --fp-radius: 0.75rem;
+        --fp-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      /* ── Base ── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: var(--fp-bg);
+        color: var(--fp-text);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-bottom: 90px;
+      }
+
+      /* ── Layout ── */
+      .fp-page {
+        padding: 24px 0 32px;
+      }
+      .fp-container-wide {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+
+      /* ── Page heading ── */
+      .fp-page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--fp-text);
+        margin: 0 0 20px;
+      }
+
+      /* ── Cards ── */
+      .fp-section-card {
+        background: var(--fp-surface);
+        border: 1px solid var(--fp-border);
+        border-radius: var(--fp-radius);
+        box-shadow: var(--fp-shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+      .fp-section-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        background: #fafbfc;
+      }
+      .fp-section-card-title {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--fp-text);
+        margin: 0;
+        letter-spacing: 0.01em;
+      }
+      .fp-section-card-body {
+        padding: 0;
+      }
+
+      /* ── Info rows ── */
+      .fp-info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        gap: 12px;
+      }
+      .fp-info-row:last-child {
+        border-bottom: none;
+      }
+      .fp-info-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--fp-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-width: 130px;
+      }
+      .fp-info-value {
+        font-size: 0.9375rem;
+        color: var(--fp-text);
+        font-weight: 500;
+        text-align: right;
+        word-break: break-all;
+      }
+      .fp-info-value.muted {
+        color: var(--fp-text-muted);
+        font-weight: 400;
+      }
+
+      /* ── Buttons ── */
+      .fp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          opacity 0.15s;
+        white-space: nowrap;
+      }
+      .fp-btn-primary {
+        background: var(--fp-accent);
+        color: #fff;
+      }
+      .fp-btn-primary:hover {
+        background: var(--fp-accent-hover);
+      }
+      .fp-btn-ghost {
+        background: transparent;
+        color: var(--fp-accent);
+        border: 1.5px solid var(--fp-accent);
+      }
+      .fp-btn-ghost:hover {
+        background: #eef3fd;
+      }
+      .fp-btn-danger {
+        background: #fee2e2;
+        color: var(--fp-danger);
+        border: 1.5px solid #fca5a5;
+      }
+      .fp-btn-danger:hover {
+        background: #fecaca;
+      }
+      .fp-btn-sm {
+        padding: 5px 13px;
+        font-size: 0.8125rem;
+      }
+
+      .fp-link {
+        color: var(--fp-accent);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+      }
+      .fp-link:hover {
+        text-decoration: underline;
+      }
+
+      /* ── Security items ── */
+      .fp-security-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        gap: 12px;
+      }
+      .fp-security-item:last-child {
+        border-bottom: none;
+      }
+      .fp-security-item-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .fp-security-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: #eff6ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--fp-accent);
+      }
+      .fp-security-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .fp-security-sub {
+        font-size: 0.8rem;
+        color: var(--fp-text-muted);
+        margin-top: 1px;
+      }
+
+      /* ── Toggle ── */
+      .fp-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fp-border);
+        gap: 12px;
+      }
+      .fp-toggle-row:last-child {
+        border-bottom: none;
+      }
+      .fp-toggle-label {
+        font-weight: 500;
+        font-size: 0.9375rem;
+      }
+      .fp-toggle-sub {
+        font-size: 0.8rem;
+        color: var(--fp-text-muted);
+        margin-top: 2px;
+      }
+      .fp-toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      .fp-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .fp-toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: #cbd5e1;
+        border-radius: 24px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .fp-toggle-slider::before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .fp-toggle input:checked + .fp-toggle-slider {
+        background: var(--fp-accent);
+      }
+      .fp-toggle input:checked + .fp-toggle-slider::before {
+        transform: translateX(20px);
+      }
+
+      /* ── Badges ── */
+      .fp-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .fp-badge-success {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .fp-badge-warning {
+        background: var(--fp-warning-bg);
+        color: var(--fp-warning-text);
+      }
+      .fp-badge-neutral {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .fp-badge-danger {
+        background: #fee2e2;
+        color: var(--fp-danger);
+      }
+
+      /* ── Restricted banner ── */
+      .fp-restricted-banner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--fp-warning-bg);
+        border: 1px solid #fde68a;
+        border-radius: var(--fp-radius);
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        font-size: 0.875rem;
+        color: var(--fp-warning-text);
+        font-weight: 500;
+      }
+
+      /* ── Logout row ── */
+      .fp-logout-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+      }
+      .fp-logout-meta {
+        font-size: 0.8125rem;
+        color: var(--fp-text-muted);
+        margin-top: 2px;
+      }
+
+      /* ── Skeleton loading ── */
+      .fp-skeleton {
+        background: linear-gradient(
+          90deg,
+          #e2e8f0 25%,
+          #f1f5f9 50%,
+          #e2e8f0 75%
+        );
+        background-size: 200% 100%;
+        animation: fp-shimmer 1.4s infinite;
+        border-radius: 6px;
+        display: inline-block;
+        height: 1em;
+      }
+      @keyframes fp-shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      /* ── Divider ── */
+      .fp-divider {
+        border: none;
+        border-top: 1px solid var(--fp-border);
+        margin: 0;
+      }
+
+      /* ── Avatar ── */
+      .fp-avatars {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--fp-accent);
+        color: #fff;
+        font-size: 1.375rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0.02em;
+      }
+
+      /* ── Profile hero ── */
+      .fp-profile-hero {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        border-bottom: 1px solid var(--fp-border);
+      }
+      .fp-profile-hero-name {
+        font-size: 1.0625rem;
+        font-weight: 700;
+      }
+      .fp-profile-hero-email {
+        font-size: 0.85rem;
+        color: var(--fp-text-muted);
+        margin-top: 1px;
+      }
+      .fp-profile-hero-since {
+        font-size: 0.8rem;
+        color: var(--fp-text-muted);
+        margin-top: 4px;
+      }
+
+      /* ── Masked account ── */
+      .fp-acct-mask {
+        font-family: "Courier New", Courier, monospace;
+        letter-spacing: 0.08em;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 520px) {
+        .fp-info-label {
+          min-width: 110px;
+          font-size: 0.75rem;
+        }
+        .fp-info-value {
+          font-size: 0.875rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container-wide">
+        <!-- Page title -->
+        <h1 class="fp-page-title">Profile &amp; Settings</h1>
+
+        <!-- Restricted banner (hidden by default; shown via JS) -->
+        <div
+          id="fp-restricted-banner"
+          class="fp-restricted-banner"
+          style="display: none"
+        >
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="#92400e" stroke-width="2" />
+            <path
+              d="M12 8v4m0 4h.01"
+              stroke="#92400e"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <span
+            >Your account has a restriction applied. Some features may be
+            limited. Contact support for assistance.</span
+          >
+        </div>
+
+        <!-- ── Profile card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Profile</h2>
+            <span
+              id="fp-member-badge"
+              class="fp-badge fp-badge-neutral"
+              style="display: none"
+            ></span>
+          </div>
+          <div class="fp-section-card-body">
+            <!-- Hero row -->
+            <div class="fp-profile-hero">
+              <div class="fp-avatars" id="fp-avatars">--</div>
+              <div>
+                <div class="fp-profile-hero-name" id="fp-full-name">
+                  <span class="fp-skeleton" style="width: 140px">&nbsp;</span>
+                </div>
+                <div class="fp-profile-hero-email" id="fp-email">
+                  <span class="fp-skeleton" style="width: 190px">&nbsp;</span>
+                </div>
+                <div class="fp-profile-hero-since" id="fp-member-since">--</div>
+              </div>
+            </div>
+
+            <!-- Info rows -->
+            <div class="fp-info-row">
+              <span class="fp-info-label">Full Name</span>
+              <span class="fp-info-value" id="fp-name-val">—</span>
+            </div>
+            <div class="fp-info-row">
+              <span class="fp-info-label">Email Address</span>
+              <span class="fp-info-value" id="fp-email-val">—</span>
+            </div>
+            <div class="fp-info-row">
+              <span class="fp-info-label">Account Number</span>
+              <span class="fp-info-value fp-acct-mask" id="fp-acct-val">—</span>
+            </div>
+            <div class="fp-info-row">
+              <span class="fp-info-label">Routing Number</span>
+              <span class="fp-info-value fp-acct-mask" id="fp-routing-val"
+                >—</span
+              >
+            </div>
+            <div class="fp-info-row">
+              <span class="fp-info-label">Account Type</span>
+              <span class="fp-info-value" id="fp-acct-type-val">—</span>
+            </div>
+            <div class="fp-info-row">
+              <span class="fp-info-label">Account Status</span>
+              <span class="fp-info-value" id="fp-status-val">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Security card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Security</h2>
+          </div>
+          <div class="fp-section-card-body">
+            <!-- Password -->
+            <div class="fp-security-item">
+              <div class="fp-security-item-left">
+                <div class="fp-security-icon">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <rect
+                      x="3"
+                      y="11"
+                      width="18"
+                      height="11"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M7 11V7a5 5 0 0 1 10 0v4"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-security-label">Password</div>
+                  <div class="fp-security-sub">
+                    Last changed more than 90 days ago
+                  </div>
+                </div>
+              </div>
+              <button class="fp-btn fp-btn-ghost fp-btn-sm">Update</button>
+            </div>
+
+            <!-- Biometrics / Passcode -->
+            <div class="fp-security-item">
+              <div class="fp-security-item-left">
+                <div class="fp-security-icon">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C9.24 2 7 4.24 7 7v1H5v13h14V8h-2V7c0-2.76-2.24-5-5-5zm0 2c1.65 0 3 1.35 3 3v1H9V7c0-1.65 1.35-3 3-3zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-security-label">Passcode &amp; Biometrics</div>
+                  <div class="fp-security-sub">
+                    Manage app passcode and Face ID / Touch ID
+                  </div>
+                </div>
+              </div>
+              <span class="fp-badge fp-badge-success">Enabled</span>
+            </div>
+
+            <!-- Two-factor auth -->
+            <div class="fp-security-item">
+              <div class="fp-security-item-left">
+                <div class="fp-security-icon">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2l7 4v6c0 5.25-3.5 10.15-7 11.5C8.5 22.15 5 17.25 5 12V6l7-4z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M9 12l2 2 4-4"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-security-label">Two-Factor Authentication</div>
+                  <div class="fp-security-sub">SMS verification on sign-in</div>
+                </div>
+              </div>
+              <span class="fp-badge fp-badge-success">Active</span>
+            </div>
+
+            <!-- Trusted devices -->
+            <div class="fp-security-item">
+              <div class="fp-security-item-left">
+                <div class="fp-security-icon">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <rect
+                      x="2"
+                      y="4"
+                      width="20"
+                      height="14"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M8 20h8M12 18v2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-security-label">Trusted Devices</div>
+                  <div class="fp-security-sub">1 device — current session</div>
+                </div>
+              </div>
+              <button class="fp-btn fp-btn-ghost fp-btn-sm">Manage</button>
+            </div>
+
+            <!-- Active sessions -->
+            <div class="fp-security-item">
+              <div class="fp-security-item-left">
+                <div class="fp-security-icon">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M12 6v6l4 2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="fp-security-label">Active Sessions</div>
+                  <div class="fp-security-sub">
+                    Signed in on this device only
+                  </div>
+                </div>
+              </div>
+              <button class="fp-btn fp-btn-ghost fp-btn-sm">Review</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Preferences card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-header">
+            <h2 class="fp-section-card-title">Preferences</h2>
+          </div>
+          <div class="fp-section-card-body">
+            <div class="fp-toggle-row">
+              <div>
+                <div class="fp-toggle-label">Push Notifications</div>
+                <div class="fp-toggle-sub">
+                  Receive alerts for transactions and account activity
+                </div>
+              </div>
+              <label class="fp-toggle">
+                <input type="checkbox" checked />
+                <span class="fp-toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="fp-toggle-row">
+              <div>
+                <div class="fp-toggle-label">Email Statements</div>
+                <div class="fp-toggle-sub">
+                  Monthly statements delivered to your email
+                </div>
+              </div>
+              <label class="fp-toggle">
+                <input type="checkbox" checked />
+                <span class="fp-toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="fp-toggle-row">
+              <div>
+                <div class="fp-toggle-label">Transaction Alerts</div>
+                <div class="fp-toggle-sub">
+                  Instant notification for every debit or credit
+                </div>
+              </div>
+              <label class="fp-toggle">
+                <input type="checkbox" checked />
+                <span class="fp-toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="fp-toggle-row">
+              <div>
+                <div class="fp-toggle-label">Marketing &amp; Promotions</div>
+                <div class="fp-toggle-sub">
+                  Offers, product updates, and account benefits
+                </div>
+              </div>
+              <label class="fp-toggle">
+                <input type="checkbox" />
+                <span class="fp-toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="fp-toggle-row">
+              <div>
+                <div class="fp-toggle-label">Low Balance Alerts</div>
+                <div class="fp-toggle-sub">
+                  Alert when balance falls below your threshold
+                </div>
+              </div>
+              <label class="fp-toggle">
+                <input type="checkbox" checked />
+                <span class="fp-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Logout card ── -->
+        <div class="fp-section-card">
+          <div class="fp-section-card-body">
+            <div class="fp-logout-row">
+              <div>
+                <div style="font-weight: 600; font-size: 0.9375rem">
+                  Sign Out
+                </div>
+                <div class="fp-logout-meta" id="fp-logout-meta">
+                  Sign out of your Fortress Pay account
+                </div>
+              </div>
+              <button class="fp-btn fp-btn-danger" id="fp-logout-btn">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                  <path
+                    d="M17 16l4-4m0 0l-4-4m4 4H7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M7 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("profile")) return;
+
+        function byId(id) {
+          return document.getElementById(id);
+        }
+
+        function setText(id, value) {
+          var el = byId(id);
+          if (!el) return;
+          el.textContent = value == null || value === "" ? "—" : String(value);
+        }
+
+        function maskAccount(num) {
+          if (!num) return "—";
+          var s = String(num).replace(/\s+/g, "");
+          return "**** " + s.slice(-4);
+        }
+
+        function initials(first, last) {
+          var f = first ? String(first).trim().charAt(0).toUpperCase() : "";
+          var l = last ? String(last).trim().charAt(0).toUpperCase() : "";
+          return f + l || "FP";
+        }
+
+        // Returns "January 2017" from various formats.
+        function formatMonthYear(value) {
+          if (!value) return "";
+          var raw = String(value).trim();
+
+          // If it already looks like "January 2017" or similar, keep it.
+          if (/[A-Za-z]/.test(raw) && /\d{4}/.test(raw)) return raw;
+
+          // Try parsing ISO / date-like strings
+          var d = new Date(raw);
+          if (!isNaN(d.getTime())) {
+            return d.toLocaleDateString("en-US", {
+              month: "long",
+              year: "numeric",
+            });
+          }
+
+          // Fallback: show raw
+          return raw;
+        }
+
+        function setStatus(isRestricted) {
+          var el = byId("fp-status-val");
+          if (!el) return;
+
+          if (isRestricted) {
+            el.innerHTML =
+              '<span class="fp-status-pill fp-status-pill--restricted">Restricted</span>';
+          } else {
+            el.innerHTML =
+              '<span class="fp-status-pill fp-status-pill--active">Active</span>';
+          }
+        }
+
+        function showRestrictionBanner(isRestricted) {
+          var banner = byId("fp-restricted-banner");
+          if (!banner) return;
+
+          if (isRestricted) {
+            banner.classList.remove("fp-hidden");
+            banner.innerHTML =
+              "<strong>Location restriction:</strong> Outgoing transfers and payments are unavailable from your current geographical location. Outgoing account features are supported only within domestic U.S. borders.";
+          } else {
+            banner.classList.add("fp-hidden");
+          }
+        }
+
+        function populate(u) {
+          var fullName =
+            [u.firstName, u.lastName].filter(Boolean).join(" ") || "—";
+
+          var avatarEl = byId("fp-avatars");
+          if (avatarEl)
+            avatarEl.textContent = initials(u.firstName, u.lastName);
+
+          setText("fp-full-name", fullName);
+          setText("fp-email", u.email);
+
+          var monthYear = formatMonthYear(u.memberSince);
+          var sinceEl = byId("fp-member-since");
+          if (sinceEl)
+            sinceEl.textContent = monthYear ? "Member since " + monthYear : "";
+
+          var memberBadge = byId("fp-member-badge");
+          if (memberBadge) {
+            if (monthYear) {
+              memberBadge.textContent = "Member since " + monthYear;
+              memberBadge.style.display = "inline-flex";
+            } else {
+              memberBadge.style.display = "none";
+            }
+          }
+
+          setText("fp-name-val", fullName);
+          setText("fp-email-val", u.email);
+          setText("fp-acct-val", maskAccount(u.accountNumber));
+          setText("fp-routing-val", u.routingNumber);
+          setText("fp-acct-type-val", u.accountType); // keep as-is
+
+          setStatus(!!u.restricted);
+          showRestrictionBanner(!!u.restricted);
+
+          setText("fp-logout-meta", "Signed in as " + (u.email || fullName));
+        }
+
+        getUser()
+          .then(function (u) {
+            populate(u);
+          })
+          .catch(function () {
+            // do nothing
+          });
+
+        var logoutBtn = byId("fp-logout-btn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function () {
+            try {
+              if (typeof logout === "function") {
+                logout();
+                return;
+              }
+            } catch (e) {}
+            try {
+              localStorage.removeItem("fp_session");
+            } catch (e2) {}
+            location.href = "login.html";
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

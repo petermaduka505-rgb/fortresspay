@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Statements — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-stmt-wrap {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+
+      /* Form card */
+      .fp-form-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius-lg);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow-md);
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .fp-form-card-header {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid var(--fp-gray-100);
+        background: var(--fp-gray-50);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .fp-form-card-header-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--fp-blue-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-blue);
+        flex-shrink: 0;
+      }
+      .fp-form-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+      }
+      .fp-form-card-sub {
+        font-size: 0.8rem;
+        color: var(--fp-gray-500);
+        margin-top: 2px;
+      }
+      .fp-form-card-body {
+        padding: 24px;
+      }
+
+      /* Date range row */
+      .fp-date-range-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 480px) {
+        .fp-date-range-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Format selector */
+      .fp-format-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .fp-format-option {
+        flex: 1;
+        min-width: 100px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1.5px solid var(--fp-gray-200);
+        border-radius: var(--fp-radius-sm);
+        cursor: pointer;
+        transition:
+          border-color var(--fp-transition),
+          background var(--fp-transition);
+        background: var(--fp-white);
+      }
+      .fp-format-option:has(input:checked) {
+        border-color: var(--fp-blue);
+        background: var(--fp-blue-light);
+      }
+      .fp-format-option input[type="radio"] {
+        accent-color: var(--fp-blue);
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .fp-format-option-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--fp-gray-800);
+      }
+      .fp-format-option-sub {
+        font-size: 0.75rem;
+        color: var(--fp-gray-500);
+      }
+
+      /* Submit btn loading */
+      .fp-btn-loading {
+        position: relative;
+        color: transparent !important;
+      }
+      .fp-btn-loading::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: fp-spin 0.65s linear infinite;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Request history */
+      .fp-history-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius-lg);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow);
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .fp-history-card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--fp-gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .fp-history-card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--fp-gray-800);
+      }
+
+      .fp-history-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fp-gray-100);
+      }
+      .fp-history-row:last-child {
+        border-bottom: none;
+      }
+
+      .fp-history-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--fp-blue-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-blue);
+        flex-shrink: 0;
+      }
+      .fp-history-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .fp-history-range {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--fp-gray-900);
+      }
+      .fp-history-meta {
+        font-size: 0.78rem;
+        color: var(--fp-gray-500);
+        margin-top: 2px;
+      }
+
+      /* Info cards at bottom */
+      .fp-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 480px) {
+        .fp-info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fp-info-tile {
+        background: var(--fp-white);
+        border: 1px solid var(--fp-gray-200);
+        border-radius: var(--fp-radius);
+        padding: 16px;
+        box-shadow: var(--fp-shadow);
+      }
+      .fp-info-tile-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--fp-blue-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-blue);
+        margin-bottom: 10px;
+      }
+      .fp-info-tile-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+        margin-bottom: 4px;
+      }
+      .fp-info-tile-text {
+        font-size: 0.8rem;
+        color: var(--fp-gray-500);
+        line-height: 1.5;
+      }
+
+      /* Success notice inline */
+      .fp-inline-success {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: var(--fp-green-light);
+        border: 1px solid #a7f3d0;
+        border-radius: var(--fp-radius-sm);
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 0.875rem;
+        color: #064e3b;
+      }
+      .fp-inline-success svg {
+        color: var(--fp-green);
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container">
+        <div class="fp-stmt-wrap">
+          <!-- Page header -->
+          <div class="fp-page-header">
+            <a
+              href="dashboard.html"
+              class="fp-back-btn"
+              aria-label="Back to dashboard"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M19 12H5M5 12l7 7M5 12l7-7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+            <div>
+              <h1 class="fp-page-title">Account Statements</h1>
+              <p class="fp-page-subtitle">
+                Request and manage your account statements
+              </p>
+            </div>
+          </div>
+
+          <!-- Inline success notice (shown after submit) -->
+          <div class="fp-inline-success fp-hidden" id="fp-submit-success">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 13l4 4L19 7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <div>
+              <p style="font-weight: 700; margin-bottom: 3px">
+                Statement Request Submitted
+              </p>
+              <p id="fp-success-detail">
+                Your statement will be delivered to your email within 1-2
+                business days.
+              </p>
+            </div>
+          </div>
+
+          <!-- Statement request form card -->
+          <div class="fp-form-card" id="fp-stmt-form-card">
+            <div class="fp-form-card-header">
+              <div class="fp-form-card-header-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M14 2v6h6M16 13H8M16 17H8M10 9H8"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p class="fp-form-card-title">Request a Statement</p>
+                <p class="fp-form-card-sub">
+                  Choose a date range and delivery format
+                </p>
+              </div>
+            </div>
+            <div class="fp-form-card-body">
+              <form id="fp-stmt-form" novalidate>
+                <!-- Date range -->
+                <div class="fp-date-range-row">
+                  <div class="fp-form-group" style="margin-bottom: 0">
+                    <label class="fp-label" for="fp-from">
+                      From Date <span class="fp-required">*</span>
+                    </label>
+                    <input
+                      class="fp-input"
+                      type="date"
+                      id="fp-from"
+                      name="from"
+                      required
+                    />
+                    <p class="fp-field-error fp-hidden" id="fp-from-error"></p>
+                  </div>
+                  <div class="fp-form-group" style="margin-bottom: 0">
+                    <label class="fp-label" for="fp-to">
+                      To Date <span class="fp-required">*</span>
+                    </label>
+                    <input
+                      class="fp-input"
+                      type="date"
+                      id="fp-to"
+                      name="to"
+                      required
+                    />
+                    <p class="fp-field-error fp-hidden" id="fp-to-error"></p>
+                  </div>
+                </div>
+
+                <div class="fp-divider"></div>
+
+                <!-- Delivery email -->
+                <div class="fp-form-group">
+                  <label class="fp-label" for="fp-email">
+                    Delivery Email <span class="fp-required">*</span>
+                  </label>
+                  <input
+                    class="fp-input"
+                    type="email"
+                    id="fp-email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                  <p class="fp-field-error fp-hidden" id="fp-email-error"></p>
+                </div>
+
+                <!-- Format selection -->
+                <div class="fp-form-group">
+                  <label class="fp-label">Delivery Format</label>
+                  <div class="fp-format-options">
+                    <label class="fp-format-option">
+                      <input type="radio" name="format" value="pdf" checked />
+                      <div>
+                        <p class="fp-format-option-label">PDF</p>
+                        <p class="fp-format-option-sub">Printable format</p>
+                      </div>
+                    </label>
+                    <label class="fp-format-option">
+                      <input type="radio" name="format" value="csv" />
+                      <div>
+                        <p class="fp-format-option-label">CSV</p>
+                        <p class="fp-format-option-sub">Spreadsheet format</p>
+                      </div>
+                    </label>
+                    <label class="fp-format-option">
+                      <input type="radio" name="format" value="both" />
+                      <div>
+                        <p class="fp-format-option-label">Both</p>
+                        <p class="fp-format-option-sub">PDF and CSV</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="fp-form-group">
+                  <label class="fp-label" for="fp-stmt-note">
+                    Additional Notes
+                    <span style="color: var(--fp-gray-400); font-weight: 400"
+                      >(optional)</span
+                    >
+                  </label>
+                  <textarea
+                    class="fp-textarea"
+                    id="fp-stmt-note"
+                    rows="2"
+                    placeholder="Any specific requirements for this statement..."
+                    style="resize: vertical"
+                  ></textarea>
+                </div>
+
+                <!-- Form error -->
+                <div
+                  class="fp-alert fp-alert-error fp-hidden"
+                  id="fp-form-error"
+                  style="margin-bottom: 16px"
+                  role="alert"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M12 8v4M12 16h.01"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <span id="fp-form-error-text"></span>
+                </div>
+
+                <button
+                  type="submit"
+                  class="fp-btn fp-btn-primary fp-btn-full"
+                  id="fp-submit-btn"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Submit Statement Request
+                </button>
+
+                <p
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--fp-gray-400);
+                    text-align: center;
+                    margin-top: 12px;
+                    line-height: 1.5;
+                  "
+                >
+                  Statements are typically delivered within 1-2 business days.
+                </p>
+              </form>
+            </div>
+          </div>
+
+          <!-- Prior requests history -->
+          <div class="fp-history-card" id="fp-history-card">
+            <div class="fp-history-card-header">
+              <span class="fp-history-card-title">Previous Requests</span>
+              <span
+                id="fp-history-count"
+                style="font-size: 0.78rem; color: var(--fp-gray-400)"
+              ></span>
+            </div>
+            <div id="fp-history-body">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  padding: 14px 20px;
+                "
+              >
+                <div
+                  style="width: 40px; height: 40px; border-radius: 50%"
+                  class="fp-skeleton"
+                ></div>
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                  "
+                >
+                  <div
+                    style="height: 13px; width: 55%; border-radius: 4px"
+                    class="fp-skeleton"
+                  ></div>
+                  <div
+                    style="height: 11px; width: 35%; border-radius: 4px"
+                    class="fp-skeleton"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info tiles -->
+          <div class="fp-info-grid">
+            <div class="fp-info-tile">
+              <div class="fp-info-tile-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="18"
+                    rx="2"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M16 2v4M8 2v4M3 10h18"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <p class="fp-info-tile-title">History Available</p>
+              <p class="fp-info-tile-text">
+                Statements are available from January 2017 to present.
+              </p>
+            </div>
+            <div class="fp-info-tile">
+              <div class="fp-info-tile-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <p class="fp-info-tile-title">Secure Delivery</p>
+              <p class="fp-info-tile-text">
+                Statements are encrypted and sent only to your verified email
+                address.
+              </p>
+            </div>
+            <div class="fp-info-tile">
+              <div class="fp-info-tile-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M12 6v6l4 2"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <p class="fp-info-tile-title">Processing Time</p>
+              <p class="fp-info-tile-text">
+                Allow 1-2 business days for your statement to be generated and
+                sent.
+              </p>
+            </div>
+            <div class="fp-info-tile">
+              <div class="fp-info-tile-icon">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M22 6l-10 7L2 6"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <p class="fp-info-tile-title">Email Confirmation</p>
+              <p class="fp-info-tile-text">
+                You will receive a confirmation email once your statement is
+                ready.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("dashboard")) return;
+
+        /* ---- Set default dates ---- */
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), 0, 1);
+        document.getElementById("fp-from").value = firstDay
+          .toISOString()
+          .slice(0, 10);
+        document.getElementById("fp-to").value = today
+          .toISOString()
+          .slice(0, 10);
+
+        /* ---- Prefill email ---- */
+        getUser()
+          .then(function (u) {
+            document.getElementById("fp-email").value = u.email;
+          })
+          .catch(function () {});
+
+        /* ---- Load history ---- */
+        function loadHistory() {
+          getStatementRequests()
+            .then(function (requests) {
+              const body = document.getElementById("fp-history-body");
+              const counter = document.getElementById("fp-history-count");
+
+              if (!requests.length) {
+                counter.textContent = "";
+                body.innerHTML = `
+              <div class="fp-empty" style="padding:28px 20px;">
+                <div class="fp-empty-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="fp-empty-text">No prior requests on record.</p>
+              </div>
+            `;
+                return;
+              }
+
+              counter.textContent =
+                requests.length + " request" + (requests.length > 1 ? "s" : "");
+
+              body.innerHTML = requests
+                .map(function (r) {
+                  const fromDate = new Date(r.from).toLocaleDateString(
+                    "en-US",
+                    { month: "short", day: "numeric", year: "numeric" },
+                  );
+                  const toDate = new Date(r.to).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                  const reqDate = new Date(r.requestedAt).toLocaleDateString(
+                    "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  );
+
+                  return `
+              <div class="fp-history-row">
+                <div class="fp-history-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M14 2v6h6M16 13H8M16 17H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="fp-history-info">
+                  <p class="fp-history-range">${fromDate} &ndash; ${toDate}</p>
+                  <p class="fp-history-meta">Requested ${reqDate} &middot; <span style="color:var(--fp-amber);font-weight:600;">${r.status}</span></p>
+                </div>
+                <span class="fp-badge-status fp-badge-processing">${r.status}</span>
+              </div>
+            `;
+                })
+                .join("");
+            })
+            .catch(function () {});
+        }
+
+        loadHistory();
+
+        /* ---- Form validation helpers ---- */
+        function setFieldError(fieldId, msg) {
+          const errEl = document.getElementById(fieldId + "-error");
+          const inputEl = document.getElementById(fieldId);
+          if (errEl) {
+            errEl.textContent = msg;
+            errEl.classList.toggle("fp-hidden", !msg);
+          }
+          if (inputEl) inputEl.classList.toggle("fp-input-error", !!msg);
+        }
+
+        function clearErrors() {
+          ["fp-from", "fp-to", "fp-email"].forEach(function (id) {
+            setFieldError(id, "");
+          });
+          const fe = document.getElementById("fp-form-error");
+          fe.classList.add("fp-hidden");
+        }
+
+        function showFormError(msg) {
+          const fe = document.getElementById("fp-form-error");
+          document.getElementById("fp-form-error-text").textContent = msg;
+          fe.classList.remove("fp-hidden");
+        }
+
+        /* ---- Form submission ---- */
+        document
+          .getElementById("fp-stmt-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            clearErrors();
+
+            const from = document.getElementById("fp-from").value;
+            const to = document.getElementById("fp-to").value;
+            const email = document.getElementById("fp-email").value.trim();
+
+            let valid = true;
+
+            if (!from) {
+              setFieldError("fp-from", "Please select a start date.");
+              valid = false;
+            }
+            if (!to) {
+              setFieldError("fp-to", "Please select an end date.");
+              valid = false;
+            }
+
+            if (from && to) {
+              if (new Date(from) > new Date(to)) {
+                setFieldError(
+                  "fp-to",
+                  "End date must be after the start date.",
+                );
+                valid = false;
+              }
+              if (new Date(from) < new Date("2017-01-01")) {
+                setFieldError(
+                  "fp-from",
+                  "Statement history is available from January 2017 onwards.",
+                );
+                valid = false;
+              }
+              if (new Date(to) > new Date()) {
+                setFieldError("fp-to", "End date cannot be in the future.");
+                valid = false;
+              }
+            }
+
+            if (!email) {
+              setFieldError(
+                "fp-email",
+                "Please enter a delivery email address.",
+              );
+              valid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+              setFieldError("fp-email", "Please enter a valid email address.");
+              valid = false;
+            }
+
+            if (!valid) return;
+
+            const submitBtn = document.getElementById("fp-submit-btn");
+            submitBtn.disabled = true;
+            submitBtn.classList.add("fp-btn-loading");
+
+            requestStatement({ from, to, email })
+              .then(function (entry) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("fp-btn-loading");
+
+                /* Show inline success */
+                const fromFmt = new Date(from).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                });
+                const toFmt = new Date(to).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                });
+                document.getElementById("fp-success-detail").textContent =
+                  "A statement from " +
+                  fromFmt +
+                  " to " +
+                  toFmt +
+                  " will be sent to " +
+                  email +
+                  " within 1-2 business days.";
+                document
+                  .getElementById("fp-submit-success")
+                  .classList.remove("fp-hidden");
+
+                /* Scroll to top of page content */
+                document
+                  .getElementById("fp-submit-success")
+                  .scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+                /* Reset form */
+                document.getElementById("fp-stmt-form").reset();
+                document.getElementById("fp-from").value = firstDay
+                  .toISOString()
+                  .slice(0, 10);
+                document.getElementById("fp-to").value = today
+                  .toISOString()
+                  .slice(0, 10);
+                getUser()
+                  .then(function (u) {
+                    document.getElementById("fp-email").value = u.email;
+                  })
+                  .catch(function () {});
+
+                /* Reload history */
+                loadHistory();
+
+                /* Auto-hide success after 8 seconds */
+                setTimeout(function () {
+                  document
+                    .getElementById("fp-submit-success")
+                    .classList.add("fp-hidden");
+                }, 8000);
+              })
+              .catch(function (err) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("fp-btn-loading");
+                showFormError(
+                  err.message ||
+                    "An unexpected error occurred. Please try again.",
+                );
+              });
+          });
+
+        /* ---- Clear errors on input change ---- */
+        ["fp-from", "fp-to", "fp-email"].forEach(function (id) {
+          const el = document.getElementById(id);
+          if (el)
+            el.addEventListener("change", function () {
+              setFieldError(id, "");
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

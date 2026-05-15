@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Transfer Funds — Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-transfer-wrap {
+        max-width: 540px;
+        margin: 0 auto;
+      }
+
+      /* Restriction banner */
+      .fp-restrict-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: linear-gradient(135deg, #7f1d1d, #991b1b);
+        color: #fff;
+        border-radius: var(--fp-radius);
+        padding: 18px 20px;
+        margin-bottom: 24px;
+        box-shadow: var(--fp-shadow-md);
+      }
+      .fp-restrict-banner-icon {
+        flex-shrink: 0;
+        margin-top: 1px;
+        color: #fca5a5;
+      }
+      .fp-restrict-banner-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .fp-restrict-banner-text {
+        font-size: 0.83rem;
+        opacity: 0.88;
+        line-height: 1.55;
+      }
+      .fp-restrict-banner-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #fecaca;
+        text-decoration: underline;
+      }
+
+      /* Form card */
+      .fp-form-card {
+        background: var(--fp-white);
+        border-radius: var(--fp-radius-lg);
+        border: 1px solid var(--fp-gray-200);
+        box-shadow: var(--fp-shadow-md);
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .fp-form-card-header {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid var(--fp-gray-100);
+        background: var(--fp-gray-50);
+      }
+      .fp-form-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+      }
+      .fp-form-card-sub {
+        font-size: 0.8rem;
+        color: var(--fp-gray-500);
+        margin-top: 3px;
+      }
+
+      .fp-form-card-body {
+        padding: 24px;
+      }
+
+      /* Amount input large */
+      .fp-amount-field-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        border: 1.5px solid var(--fp-gray-300);
+        border-radius: var(--fp-radius-sm);
+        overflow: hidden;
+        transition:
+          border-color var(--fp-transition),
+          box-shadow var(--fp-transition);
+        background: var(--fp-white);
+      }
+      .fp-amount-field-wrap:focus-within {
+        border-color: var(--fp-blue);
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+      }
+      .fp-amount-prefix {
+        padding: 0 14px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--fp-gray-500);
+        background: var(--fp-gray-50);
+        border-right: 1.5px solid var(--fp-gray-200);
+        height: 48px;
+        display: flex;
+        align-items: center;
+      }
+      .fp-amount-field {
+        flex: 1;
+        padding: 0 14px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+        border: none;
+        outline: none;
+        height: 48px;
+        background: var(--fp-white);
+      }
+      .fp-amount-field::placeholder {
+        color: var(--fp-gray-300);
+        font-weight: 400;
+      }
+      .fp-amount-field:disabled {
+        background: var(--fp-gray-50);
+        color: var(--fp-gray-400);
+        cursor: not-allowed;
+      }
+
+      /* Transfer type tabs */
+      .fp-tabs {
+        display: flex;
+        background: var(--fp-gray-100);
+        border-radius: var(--fp-radius-sm);
+        padding: 3px;
+        margin-bottom: 24px;
+      }
+      .fp-tab {
+        flex: 1;
+        padding: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--fp-gray-500);
+        border-radius: 6px;
+        text-align: center;
+        transition:
+          background var(--fp-transition),
+          color var(--fp-transition),
+          box-shadow var(--fp-transition);
+      }
+      .fp-tab-active {
+        background: var(--fp-white);
+        color: var(--fp-gray-900);
+        box-shadow: var(--fp-shadow);
+      }
+
+      /* Account selector */
+      .fp-account-from {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        background: var(--fp-blue-light);
+        border-radius: var(--fp-radius-sm);
+        border: 1.5px solid #bfdbfe;
+        margin-bottom: 20px;
+      }
+      .fp-account-from-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--fp-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .fp-account-from-label {
+        font-size: 0.75rem;
+        color: var(--fp-blue-dark);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+      }
+      .fp-account-from-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--fp-gray-900);
+      }
+      .fp-account-from-number {
+        font-size: 0.8rem;
+        color: var(--fp-gray-600);
+      }
+
+      /* Divider with icon */
+      .fp-transfer-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 8px 0 20px;
+        color: var(--fp-gray-300);
+      }
+
+      /* Submit button disabled overlay */
+      .fp-btn-restricted {
+        position: relative;
+        background: var(--fp-gray-200) !important;
+        color: var(--fp-gray-400) !important;
+        cursor: not-allowed !important;
+      }
+
+      /* Info items at bottom */
+      .fp-transfer-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .fp-transfer-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.82rem;
+        color: var(--fp-gray-500);
+        line-height: 1.5;
+      }
+      .fp-transfer-info-item svg {
+        flex-shrink: 0;
+        margin-top: 1px;
+        color: var(--fp-gray-400);
+      }
+
+      /* Modal content */
+      .fp-restrict-modal-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--fp-red-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--fp-red);
+        margin: 0 auto 20px;
+      }
+
+      @media (min-width: 768px) {
+        .fp-transfer-wrap {
+          padding: 0 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fp-header"></div>
+
+    <main class="fp-page">
+      <div class="fp-container">
+        <div class="fp-transfer-wrap">
+          <!-- Page header -->
+          <div class="fp-page-header">
+            <a
+              href="dashboard.html"
+              class="fp-back-btn"
+              aria-label="Back to dashboard"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M19 12H5M5 12l7 7M5 12l7-7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+            <div>
+              <h1 class="fp-page-title">Transfer Funds</h1>
+              <p class="fp-page-subtitle">Send money to another account</p>
+            </div>
+          </div>
+
+          <!-- Restriction banner -->
+          <div class="fp-restrict-banner" id="fp-restrict-banner">
+            <div class="fp-restrict-banner-icon">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <rect
+                  x="5"
+                  y="11"
+                  width="14"
+                  height="10"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M8 11V7a4 4 0 018 0v4"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="fp-restrict-banner-title">Transfers Unavailable</p>
+              <p class="fp-restrict-banner-text">
+                Outgoing transfers can’t be initiated from your current
+                geographical location. Account features for outgoing activity
+                are restricted to domestic U.S. borders only. Incoming bank
+                transfer credits will continue to be processed normally. If you
+                believe this is an error, please contact our support team.
+              </p>
+              <a href="support.html" class="fp-restrict-banner-link">
+                Contact Support
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 18l6-6-6-6"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Transfer type tabs -->
+          <div class="fp-tabs" role="tablist">
+            <div class="fp-tab fp-tab-active" role="tab" aria-selected="true">
+              Bank Transfer
+            </div>
+            <div class="fp-tab" role="tab" aria-selected="false">
+              Internal Transfer
+            </div>
+            <div class="fp-tab" role="tab" aria-selected="false">
+              Wire Transfer
+            </div>
+          </div>
+
+          <!-- Transfer form card -->
+          <div class="fp-form-card">
+            <div class="fp-form-card-header">
+              <p class="fp-form-card-title">Transfer Details</p>
+              <p class="fp-form-card-sub">All fields are required</p>
+            </div>
+            <div class="fp-form-card-body">
+              <!-- From account -->
+              <div class="fp-form-group">
+                <label class="fp-label">From Account</label>
+                <div class="fp-account-from" id="fp-from-account">
+                  <div class="fp-account-from-icon">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 22V12h6v10"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="fp-account-from-label">Source Account</p>
+                    <p class="fp-account-from-name" id="fp-from-account-type">
+                      Fixed Deposit Account
+                    </p>
+                    <p
+                      class="fp-account-from-number"
+                      id="fp-from-account-number"
+                    >
+                      Loading...
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Amount -->
+              <div class="fp-form-group">
+                <label class="fp-label" for="fp-amount">
+                  Amount <span class="fp-required">*</span>
+                </label>
+                <div class="fp-amount-field-wrap">
+                  <span class="fp-amount-prefix">USD</span>
+                  <input
+                    type="number"
+                    class="fp-amount-field"
+                    id="fp-amount"
+                    placeholder="0.00"
+                    min="1"
+                    step="0.01"
+                    disabled
+                    aria-label="Transfer amount in USD"
+                  />
+                </div>
+              </div>
+
+              <!-- Recipient name -->
+              <div class="fp-form-group">
+                <label class="fp-label" for="fp-recipient-name">
+                  Recipient Full Name <span class="fp-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="fp-input"
+                  id="fp-recipient-name"
+                  placeholder="e.g. James Thornton"
+                  disabled
+                  aria-label="Recipient full name"
+                />
+              </div>
+
+              <!-- Recipient bank -->
+              <div class="fp-form-group">
+                <label class="fp-label" for="fp-bank-name">
+                  Recipient Bank <span class="fp-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="fp-input"
+                  id="fp-bank-name"
+                  placeholder="e.g. Chase Bank"
+                  disabled
+                  aria-label="Recipient bank name"
+                />
+              </div>
+
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
+              >
+                <!-- Account number -->
+                <div class="fp-form-group" style="margin-bottom: 0">
+                  <label class="fp-label" for="fp-account-number">
+                    Account Number <span class="fp-required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="fp-input"
+                    id="fp-account-number"
+                    placeholder="Account No."
+                    disabled
+                    aria-label="Recipient account number"
+                  />
+                </div>
+                <!-- Routing number -->
+                <div class="fp-form-group" style="margin-bottom: 0">
+                  <label class="fp-label" for="fp-routing-number">
+                    Routing Number <span class="fp-required">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="fp-input"
+                    id="fp-routing-number"
+                    placeholder="Routing No."
+                    disabled
+                    aria-label="Recipient routing number"
+                  />
+                </div>
+              </div>
+
+              <!-- Note -->
+              <div class="fp-form-group" style="margin-top: 20px">
+                <label class="fp-label" for="fp-transfer-note">
+                  Transfer Note
+                  <span style="color: var(--fp-gray-400); font-weight: 400"
+                    >(optional)</span
+                  >
+                </label>
+                <textarea
+                  class="fp-textarea"
+                  id="fp-transfer-note"
+                  rows="3"
+                  placeholder="Add a note for this transfer..."
+                  disabled
+                  style="resize: vertical"
+                  aria-label="Transfer note"
+                ></textarea>
+              </div>
+
+              <!-- Submit -->
+              <button
+                type="button"
+                class="fp-btn fp-btn-primary fp-btn-full fp-btn-restricted"
+                id="fp-transfer-submit"
+                aria-disabled="true"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="5"
+                    y="11"
+                    width="14"
+                    height="10"
+                    rx="2"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M8 11V7a4 4 0 018 0v4"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Transfer Restricted
+              </button>
+
+              <!-- Info items -->
+              <div class="fp-transfer-info-list">
+                <div class="fp-transfer-info-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M12 16v-4M12 8h.01"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Transfers are processed on business days only (Monday to
+                  Friday).
+                </div>
+                <div class="fp-transfer-info-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  All transfers are protected by 256-bit SSL encryption.
+                </div>
+                <div class="fp-transfer-info-item">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M16 2v4M8 2v4M3 10h18"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Standard bank transfers typically arrive within 1-3 business
+                  days.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav id="fp-bottom-nav"></nav>
+
+    <!-- Restriction info modal -->
+    <div
+      class="fp-modal"
+      id="fp-restrict-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fp-restrict-modal-title"
+    >
+      <div class="fp-modal-box">
+        <button
+          class="fp-modal-close"
+          id="fp-restrict-modal-close"
+          aria-label="Close"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+
+        <div class="fp-restrict-modal-icon">
+          <svg
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect
+              x="5"
+              y="11"
+              width="14"
+              height="10"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+            <path
+              d="M8 11V7a4 4 0 018 0v4"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <h2
+          class="fp-modal-title"
+          id="fp-restrict-modal-title"
+          style="text-align: center"
+        >
+          Outgoing Transfers Restricted
+        </h2>
+        <p class="fp-modal-subtitle" style="text-align: center">
+          Outgoing transfers and payments are unavailable from your current
+          geographical location. Outgoing account features are supported only
+          within domestic U.S. borders.
+        </p>
+
+        <div class="fp-alert fp-alert-warning" style="margin-bottom: 20px">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M12 9v4M12 17h.01"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div>
+            <p class="fp-alert-title">Restriction Active Since January 2025</p>
+            <p>
+              Outgoing activity is restricted when access is detected outside
+              supported domestic U.S. service regions. During this period,
+              outgoing transactions cannot be initiated.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <a href="support.html" class="fp-btn fp-btn-primary fp-btn-full">
+            Contact Support Team
+          </a>
+          <button
+            class="fp-btn fp-btn-ghost fp-btn-full"
+            id="fp-restrict-modal-dismiss"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function () {
+        if (!initPage("transfer")) return;
+
+        /* ---- Populate from-account ---- */
+        getUser()
+          .then(function (u) {
+            document.getElementById("fp-from-account-type").textContent =
+              u.accountType;
+            document.getElementById("fp-from-account-number").textContent =
+              u.accountNumber;
+          })
+          .catch(function () {});
+
+        /* ---- Submit button opens restriction modal ---- */
+        document
+          .getElementById("fp-transfer-submit")
+          .addEventListener("click", function () {
+            openModal("fp-restrict-modal");
+          });
+
+        /* ---- Modal close handlers ---- */
+        document
+          .getElementById("fp-restrict-modal-close")
+          .addEventListener("click", function () {
+            closeModal("fp-restrict-modal");
+          });
+        document
+          .getElementById("fp-restrict-modal-dismiss")
+          .addEventListener("click", function () {
+            closeModal("fp-restrict-modal");
+          });
+        setupModalEsc("fp-restrict-modal");
+      })();
+    </script>
+  </body>
+</html>

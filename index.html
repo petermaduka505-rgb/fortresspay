@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=0.85, viewport-fit=cover"
+    />
+    <title>Fortress Pay</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .fp-splash {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--fp-gray-50);
+      }
+      .fp-splash-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .fp-splash-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .fp-splash-name {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--fp-gray-900);
+        letter-spacing: -0.4px;
+      }
+      .fp-splash-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--fp-gray-200);
+        border-top-color: var(--fp-blue);
+        border-radius: 50%;
+        animation: fp-spin 0.7s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fp-splash">
+      <div class="fp-splash-inner">
+        <div class="fp-splash-logo">
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 28 28"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect width="28" height="28" rx="6" fill="#1a56db" />
+            <path d="M7 8h14v3H7zM7 13h10v2H7zM7 18h12v2H7z" fill="#fff" />
+            <path
+              d="M19 13l4 4-4 4"
+              stroke="#93c5fd"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+          <span class="fp-splash-name">Fortress Pay</span>
+        </div>
+        <div class="fp-splash-spinner"></div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+      (function () {
+        seedIfNeeded();
+        const session = getSession();
+        if (session) {
+          window.location.replace("dashboard.html");
+        } else {
+          window.location.replace("login.html");
+        }
+      })();
+    </script>
+  </body>
+</html>
