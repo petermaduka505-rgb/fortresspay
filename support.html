@@ -1028,101 +1028,658 @@
       (function () {
         if (!initPage("support")) return;
 
-        /* ── Prefill name & email from user ── */
-        getUser()
-          .then(function (u) {
-            const name = [u.firstName, u.lastName].filter(Boolean).join(" ");
-            const email = u.email || "";
-            if (name) document.getElementById("fp-msg-name").value = name;
-            if (email) document.getElementById("fp-msg-email").value = email;
-          })
-          .catch(function () {
-            // Non-critical; leave fields blank for manual input
-            document.getElementById("fp-msg-name").removeAttribute("readonly");
-            document.getElementById("fp-msg-email").removeAttribute("readonly");
-          });
+        /* ================================================================ */
+        /*  I18N: page bundle (UI only)                                      */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "support.title": "Help Center",
+            "support.subtitle":
+              "Find answers, get help, and reach our support team.",
 
-        /* ── FAQ search ── */
+            "support.search.ph": "Search help articles...",
+
+            "support.faq.title": "Frequently Asked Questions",
+            "support.faq.count": "{visible} of {total} questions",
+
+            "support.noResults.title": "No results found",
+            "support.noResults.sub":
+              "Try a different search term or browse the questions above.",
+
+            "support.contact.title": "Contact Options",
+            "support.contact.secure.label": "Secure Message",
+            "support.contact.secure.sub":
+              "In-app encrypted messaging — response within 24 hours",
+            "support.contact.phone.label": "Phone Support",
+            "support.contact.phone.sub":
+              "1-800-555-0192 — Mon–Fri 8 AM to 8 PM ET",
+            "support.contact.email.label": "Email",
+            "support.contact.email.sub":
+              "support@fortresspay.com — response within 1–2 business days",
+            "support.contact.chat.label": "Live Chat",
+            "support.contact.chat.sub":
+              "Real-time support — available during phone hours",
+
+            "support.avail.available": "Available",
+            "support.avail.openNow": "Open now",
+            "support.avail.online": "Online",
+
+            "support.hours.monFri": "Mon – Fri",
+            "support.hours.sat": "Saturday",
+            "support.hours.sun": "Sunday",
+            "support.hours.closed": "Closed",
+
+            "support.msg.title": "Send a Secure Message",
+            "support.msg.name": "Full Name",
+            "support.msg.email": "Email Address",
+            "support.msg.loading": "Loading...",
+
+            "support.msg.subject": "Subject",
+            "support.msg.subjectPh": "Select a topic...",
+            "support.msg.topic.access": "Account Access Issue",
+            "support.msg.topic.dispute": "Transaction Dispute",
+            "support.msg.topic.transferPay": "Transfer or Payment Help",
+            "support.msg.topic.restriction": "Account Restriction Inquiry",
+            "support.msg.topic.identity": "Identity Verification",
+            "support.msg.topic.linked": "Linked Account Help",
+            "support.msg.topic.statement": "Statement or Document Request",
+            "support.msg.topic.security": "Security Concern",
+            "support.msg.topic.other": "Other",
+
+            "support.msg.body": "Message",
+            "support.msg.bodyPh":
+              "Describe your question or issue in detail. Include any relevant transaction dates or amounts.",
+
+            "support.msg.send": "Send Message",
+            "support.msg.sending": "Sending...",
+
+            "support.err.subject": "Please select a subject before sending.",
+            "support.err.bodyLen":
+              "Please enter a message of at least 10 characters.",
+
+            "support.success.html":
+              "<strong>Message received.</strong> Our team will review your request and respond to your email within 1–2 business days. A reference number has been sent to your inbox.",
+          },
+
+          "zh-Hans": {
+            "support.title": "帮助中心",
+            "support.subtitle": "查找答案、获取帮助并联系支持团队。",
+
+            "support.search.ph": "搜索帮助文章...",
+
+            "support.faq.title": "常见问题",
+            "support.faq.count": "显示 {visible} / {total} 个问题",
+
+            "support.noResults.title": "未找到结果",
+            "support.noResults.sub": "请尝试其他关键词，或浏览上方问题。",
+
+            "support.contact.title": "联系方式",
+            "support.contact.secure.label": "安全消息",
+            "support.contact.secure.sub": "应用内加密消息 — 24小时内回复",
+            "support.contact.phone.label": "电话支持",
+            "support.contact.phone.sub":
+              "1-800-555-0192 — 周一至周五 美东时间 8:00–20:00",
+            "support.contact.email.label": "邮箱",
+            "support.contact.email.sub":
+              "support@fortresspay.com — 1–2个工作日内回复",
+            "support.contact.chat.label": "在线聊天",
+            "support.contact.chat.sub": "实时支持 — 电话服务时间内可用",
+
+            "support.avail.available": "可用",
+            "support.avail.openNow": "营业中",
+            "support.avail.online": "在线",
+
+            "support.hours.monFri": "周一 – 周五",
+            "support.hours.sat": "周六",
+            "support.hours.sun": "周日",
+            "support.hours.closed": "休息",
+
+            "support.msg.title": "发送安全消息",
+            "support.msg.name": "姓名",
+            "support.msg.email": "邮箱地址",
+            "support.msg.loading": "加载中...",
+
+            "support.msg.subject": "主题",
+            "support.msg.subjectPh": "选择主题...",
+            "support.msg.topic.access": "账户访问问题",
+            "support.msg.topic.dispute": "交易争议",
+            "support.msg.topic.transferPay": "转账或付款帮助",
+            "support.msg.topic.restriction": "账户限制咨询",
+            "support.msg.topic.identity": "身份验证",
+            "support.msg.topic.linked": "外部账户绑定帮助",
+            "support.msg.topic.statement": "对账单或文件申请",
+            "support.msg.topic.security": "安全问题",
+            "support.msg.topic.other": "其他",
+
+            "support.msg.body": "消息内容",
+            "support.msg.bodyPh":
+              "请详细描述您的问题，并包含相关日期或金额等信息。",
+
+            "support.msg.send": "发送消息",
+            "support.msg.sending": "发送中...",
+
+            "support.err.subject": "发送前请选择一个主题。",
+            "support.err.bodyLen": "请输入至少10个字符的消息内容。",
+
+            "support.success.html":
+              "<strong>已收到消息。</strong> 我们将审核您的请求，并在1–2个工作日内通过邮件回复您。参考编号已发送至您的收件箱。",
+          },
+
+          "zh-Hant": {
+            "support.title": "幫助中心",
+            "support.subtitle": "查找答案、取得協助並聯絡支援團隊。",
+
+            "support.search.ph": "搜尋幫助文章...",
+
+            "support.faq.title": "常見問題",
+            "support.faq.count": "顯示 {visible} / {total} 個問題",
+
+            "support.noResults.title": "未找到結果",
+            "support.noResults.sub": "請嘗試其他關鍵字，或瀏覽上方問題。",
+
+            "support.contact.title": "聯絡方式",
+            "support.contact.secure.label": "安全訊息",
+            "support.contact.secure.sub": "應用內加密訊息 — 24小時內回覆",
+            "support.contact.phone.label": "電話支援",
+            "support.contact.phone.sub":
+              "1-800-555-0192 — 週一至週五 美東時間 8:00–20:00",
+            "support.contact.email.label": "電子郵件",
+            "support.contact.email.sub":
+              "support@fortresspay.com — 1–2 個工作日內回覆",
+            "support.contact.chat.label": "即時聊天",
+            "support.contact.chat.sub": "即時支援 — 電話服務時間內可用",
+
+            "support.avail.available": "可用",
+            "support.avail.openNow": "營業中",
+            "support.avail.online": "線上",
+
+            "support.hours.monFri": "週一 – 週五",
+            "support.hours.sat": "週六",
+            "support.hours.sun": "週日",
+            "support.hours.closed": "休息",
+
+            "support.msg.title": "傳送安全訊息",
+            "support.msg.name": "姓名",
+            "support.msg.email": "電子郵件地址",
+            "support.msg.loading": "載入中...",
+
+            "support.msg.subject": "主旨",
+            "support.msg.subjectPh": "選擇主題...",
+            "support.msg.topic.access": "帳戶存取問題",
+            "support.msg.topic.dispute": "交易爭議",
+            "support.msg.topic.transferPay": "轉帳或付款協助",
+            "support.msg.topic.restriction": "帳戶限制諮詢",
+            "support.msg.topic.identity": "身分驗證",
+            "support.msg.topic.linked": "外部帳戶綁定協助",
+            "support.msg.topic.statement": "帳單或文件申請",
+            "support.msg.topic.security": "安全疑慮",
+            "support.msg.topic.other": "其他",
+
+            "support.msg.body": "訊息內容",
+            "support.msg.bodyPh":
+              "請詳細描述您的問題，並包含相關日期或金額等資訊。",
+
+            "support.msg.send": "傳送訊息",
+            "support.msg.sending": "傳送中...",
+
+            "support.err.subject": "傳送前請先選擇主旨。",
+            "support.err.bodyLen": "請輸入至少 10 個字元的訊息內容。",
+
+            "support.success.html":
+              "<strong>已收到訊息。</strong> 我們將審核您的需求，並於 1–2 個工作日內透過電子郵件回覆您。參考編號已寄送至您的收件匣。",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State                                                            */
+        /* ================================================================ */
+        var state = {
+          visibleFaq: 0,
+          isSending: false,
+          formErrorKey: "", // support.err.subject | support.err.bodyLen
+        };
+
+        /* ================================================================ */
+        /*  DOM refs                                                         */
+        /* ================================================================ */
         var faqItems = Array.from(document.querySelectorAll(".fp-faq-item"));
         var faqCount = document.getElementById("fp-faq-count");
         var noResults = document.getElementById("fp-faq-no-results");
         var faqCard = document.getElementById("fp-faq-card");
 
-        function updateFaqCount(visible) {
-          faqCount.textContent =
-            visible + " of " + faqItems.length + " questions";
-        }
-        updateFaqCount(faqItems.length);
-
-        document
-          .getElementById("fp-faq-search")
-          .addEventListener("input", function () {
-            var q = this.value.trim().toLowerCase();
-            var visible = 0;
-
-            faqItems.forEach(function (item) {
-              var text = item.textContent.toLowerCase();
-              var match = !q || text.indexOf(q) !== -1;
-              item.style.display = match ? "" : "none";
-              if (match) visible++;
-            });
-
-            updateFaqCount(visible);
-
-            if (visible === 0 && q) {
-              faqCard.style.display = "none";
-              noResults.style.display = "block";
-            } else {
-              faqCard.style.display = "";
-              noResults.style.display = "none";
-            }
-          });
-
-        /* ── Secure message form ── */
         var form = document.getElementById("fp-support-form");
         var submitBtn = document.getElementById("fp-submit-btn");
         var errorEl = document.getElementById("fp-form-error");
         var successEl = document.getElementById("fp-form-success");
 
+        state.visibleFaq = faqItems.length;
+
+        /* ================================================================ */
+        /*  Helpers                                                          */
+        /* ================================================================ */
+        function fmt(template, vars) {
+          return String(template || "").replace(/\{(\w+)\}/g, function (_, k) {
+            return vars && vars[k] != null ? String(vars[k]) : "";
+          });
+        }
+
+        function setText(sel, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          el.textContent = t(key, fallback != null ? fallback : el.textContent);
+        }
+
+        function setAttr(sel, attr, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var fb = fallback != null ? fallback : el.getAttribute(attr) || "";
+          el.setAttribute(attr, t(key, fb));
+        }
+
+        function setLabelText(forId, key, fallback) {
+          var label = document.querySelector('label[for="' + forId + '"]');
+          if (!label) return;
+          label.textContent = t(
+            key,
+            fallback != null ? fallback : label.textContent,
+          );
+        }
+
+        // For <span class="fp-avail"><span class="fp-avail-dot"></span>Available</span>
+        function setAvailText(el, key, fallback) {
+          if (!el) return;
+          var tn = Array.from(el.childNodes).find(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          var txt = t(key, fallback || "").trim();
+          if (tn) tn.textContent = txt;
+          else el.appendChild(document.createTextNode(txt));
+        }
+
+        // For the submit button with SVG + text
+        function setBtnSvgText(btn, key, fallback) {
+          if (!btn) return;
+          var tn = Array.from(btn.childNodes).find(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          var txt = " " + t(key, fallback || "").trim();
+          if (tn) tn.textContent = txt;
+          else btn.appendChild(document.createTextNode(txt));
+        }
+
+        function renderFaqCount() {
+          if (!faqCount) return;
+          faqCount.textContent = fmt(
+            t("support.faq.count", "{visible} of {total} questions"),
+            {
+              visible: state.visibleFaq,
+              total: faqItems.length,
+            },
+          );
+        }
+
+        function renderSubmitButton() {
+          if (!submitBtn) return;
+
+          if (state.isSending) {
+            // During sending we keep it simple text (like your original)
+            submitBtn.textContent = t("support.msg.sending", "Sending...");
+            return;
+          }
+
+          // Restore SVG + text
+          submitBtn.innerHTML = [
+            '<svg width="16" height="16" fill="none" viewBox="0 0 24 24">',
+            '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+            "</svg>",
+          ].join("");
+          setBtnSvgText(submitBtn, "support.msg.send", "Send Message");
+        }
+
+        function renderFormError() {
+          if (!errorEl) return;
+          if (!state.formErrorKey) return; // only re-render if we showed a translated error
+          errorEl.textContent = t(state.formErrorKey, errorEl.textContent);
+        }
+
+        function renderSuccessText() {
+          if (!successEl) return;
+          var div = successEl.querySelector("div");
+          if (!div) return;
+          div.innerHTML = t("support.success.html", div.innerHTML);
+        }
+
+        function applyStaticText() {
+          setText(".fp-page-title", "support.title", "Help Center");
+          setText(".fp-page-subtitle", "support.subtitle");
+
+          setAttr(
+            "#fp-faq-search",
+            "placeholder",
+            "support.search.ph",
+            "Search help articles...",
+          );
+
+          // FAQ card title
+          setText(
+            "#fp-faq-card .fp-section-card-title",
+            "support.faq.title",
+            "Frequently Asked Questions",
+          );
+
+          // No-results block
+          var noPs = noResults ? noResults.querySelectorAll("p") : [];
+          if (noPs[0])
+            noPs[0].textContent = t(
+              "support.noResults.title",
+              noPs[0].textContent,
+            );
+          if (noPs[1])
+            noPs[1].textContent = t(
+              "support.noResults.sub",
+              noPs[1].textContent,
+            );
+
+          // Contact options card title + rows
+          var contactCard = Array.from(
+            document.querySelectorAll(".fp-section-card"),
+          ).find(function (card) {
+            return card.querySelector(".fp-contact-item");
+          });
+          if (contactCard) {
+            var title = contactCard.querySelector(".fp-section-card-title");
+            if (title)
+              title.textContent = t("support.contact.title", title.textContent);
+
+            var items = contactCard.querySelectorAll(".fp-contact-item");
+            // 0: secure message
+            if (items[0]) {
+              items[0].querySelector(".fp-contact-label").textContent = t(
+                "support.contact.secure.label",
+              );
+              items[0].querySelector(".fp-contact-sub").textContent = t(
+                "support.contact.secure.sub",
+              );
+              setAvailText(
+                items[0].querySelector(".fp-avail"),
+                "support.avail.available",
+                "Available",
+              );
+            }
+            // 1: phone
+            if (items[1]) {
+              items[1].querySelector(".fp-contact-label").textContent = t(
+                "support.contact.phone.label",
+              );
+              items[1].querySelector(".fp-contact-sub").textContent = t(
+                "support.contact.phone.sub",
+              );
+              setAvailText(
+                items[1].querySelector(".fp-avail"),
+                "support.avail.openNow",
+                "Open now",
+              );
+
+              var tds = items[1].querySelectorAll(".fp-hours td");
+              // Row 1
+              if (tds[0])
+                tds[0].textContent = t(
+                  "support.hours.monFri",
+                  tds[0].textContent,
+                );
+              // Row 2
+              if (tds[2])
+                tds[2].textContent = t("support.hours.sat", tds[2].textContent);
+              // Row 3
+              if (tds[4])
+                tds[4].textContent = t("support.hours.sun", tds[4].textContent);
+              if (tds[5])
+                tds[5].textContent = t(
+                  "support.hours.closed",
+                  tds[5].textContent,
+                );
+            }
+            // 2: email
+            if (items[2]) {
+              items[2].querySelector(".fp-contact-label").textContent = t(
+                "support.contact.email.label",
+              );
+              items[2].querySelector(".fp-contact-sub").textContent = t(
+                "support.contact.email.sub",
+              );
+              setAvailText(
+                items[2].querySelector(".fp-avail"),
+                "support.avail.available",
+                "Available",
+              );
+            }
+            // 3: live chat
+            if (items[3]) {
+              items[3].querySelector(".fp-contact-label").textContent = t(
+                "support.contact.chat.label",
+              );
+              items[3].querySelector(".fp-contact-sub").textContent = t(
+                "support.contact.chat.sub",
+              );
+              setAvailText(
+                items[3].querySelector(".fp-avail"),
+                "support.avail.online",
+                "Online",
+              );
+            }
+          }
+
+          // Secure message card title
+          var msgCard = Array.from(
+            document.querySelectorAll(".fp-section-card"),
+          ).find(function (card) {
+            return card.querySelector("#fp-support-form");
+          });
+          if (msgCard) {
+            var msgTitle = msgCard.querySelector(".fp-section-card-title");
+            if (msgTitle)
+              msgTitle.textContent = t(
+                "support.msg.title",
+                msgTitle.textContent,
+              );
+          }
+
+          // Form labels + placeholders
+          setLabelText("fp-msg-name", "support.msg.name", "Full Name");
+          setLabelText("fp-msg-email", "support.msg.email", "Email Address");
+          setAttr(
+            "#fp-msg-name",
+            "placeholder",
+            "support.msg.loading",
+            "Loading...",
+          );
+          setAttr(
+            "#fp-msg-email",
+            "placeholder",
+            "support.msg.loading",
+            "Loading...",
+          );
+
+          setLabelText("fp-msg-subject", "support.msg.subject", "Subject");
+          setLabelText("fp-msg-body", "support.msg.body", "Message");
+          setAttr("#fp-msg-body", "placeholder", "support.msg.bodyPh");
+
+          // Subject options
+          var subj = document.getElementById("fp-msg-subject");
+          if (subj && subj.options && subj.options.length >= 10) {
+            subj.options[0].textContent = t(
+              "support.msg.subjectPh",
+              subj.options[0].textContent,
+            );
+            subj.options[1].textContent = t(
+              "support.msg.topic.access",
+              subj.options[1].textContent,
+            );
+            subj.options[2].textContent = t(
+              "support.msg.topic.dispute",
+              subj.options[2].textContent,
+            );
+            subj.options[3].textContent = t(
+              "support.msg.topic.transferPay",
+              subj.options[3].textContent,
+            );
+            subj.options[4].textContent = t(
+              "support.msg.topic.restriction",
+              subj.options[4].textContent,
+            );
+            subj.options[5].textContent = t(
+              "support.msg.topic.identity",
+              subj.options[5].textContent,
+            );
+            subj.options[6].textContent = t(
+              "support.msg.topic.linked",
+              subj.options[6].textContent,
+            );
+            subj.options[7].textContent = t(
+              "support.msg.topic.statement",
+              subj.options[7].textContent,
+            );
+            subj.options[8].textContent = t(
+              "support.msg.topic.security",
+              subj.options[8].textContent,
+            );
+            subj.options[9].textContent = t(
+              "support.msg.topic.other",
+              subj.options[9].textContent,
+            );
+          }
+
+          renderFaqCount();
+          renderSubmitButton();
+          renderFormError();
+          renderSuccessText();
+        }
+
+        function renderAll() {
+          applyStaticText();
+        }
+
+        /* ================================================================ */
+        /*  Prefill name & email                                             */
+        /* ================================================================ */
+        getUser()
+          .then(function (u) {
+            var name = [u.firstName, u.lastName].filter(Boolean).join(" ");
+            var email = u.email || "";
+
+            if (name) document.getElementById("fp-msg-name").value = name;
+            if (email) document.getElementById("fp-msg-email").value = email;
+
+            // keep readonly, just ensure placeholders are translated
+            renderAll();
+          })
+          .catch(function () {
+            // Non-critical; allow manual input
+            var n = document.getElementById("fp-msg-name");
+            var e = document.getElementById("fp-msg-email");
+            if (n) n.removeAttribute("readonly");
+            if (e) e.removeAttribute("readonly");
+            renderAll();
+          });
+
+        /* ================================================================ */
+        /*  FAQ search                                                       */
+        /* ================================================================ */
+        function applyFaqFilter() {
+          var input = document.getElementById("fp-faq-search");
+          var q = input ? input.value.trim().toLowerCase() : "";
+          var visible = 0;
+
+          faqItems.forEach(function (item) {
+            var text = item.textContent.toLowerCase();
+            var match = !q || text.indexOf(q) !== -1;
+            item.style.display = match ? "" : "none";
+            if (match) visible++;
+          });
+
+          state.visibleFaq = visible;
+          renderFaqCount();
+
+          if (visible === 0 && q) {
+            if (faqCard) faqCard.style.display = "none";
+            if (noResults) noResults.style.display = "block";
+          } else {
+            if (faqCard) faqCard.style.display = "";
+            if (noResults) noResults.style.display = "none";
+          }
+        }
+
+        renderAll();
+        applyFaqFilter(); // initial count
+
+        document
+          .getElementById("fp-faq-search")
+          .addEventListener("input", function () {
+            applyFaqFilter();
+          });
+
+        /* ================================================================ */
+        /*  Secure message form                                              */
+        /* ================================================================ */
         form.addEventListener("submit", function (e) {
           e.preventDefault();
-          errorEl.style.display = "none";
-          successEl.style.display = "none";
+
+          state.formErrorKey = "";
+          if (errorEl) errorEl.style.display = "none";
+          if (successEl) successEl.style.display = "none";
 
           var subject = document.getElementById("fp-msg-subject").value.trim();
           var body = document.getElementById("fp-msg-body").value.trim();
 
           if (!subject) {
-            errorEl.textContent = "Please select a subject before sending.";
+            state.formErrorKey = "support.err.subject";
+            errorEl.textContent = t(
+              "support.err.subject",
+              "Please select a subject before sending.",
+            );
             errorEl.style.display = "block";
             return;
           }
           if (body.length < 10) {
-            errorEl.textContent =
-              "Please enter a message of at least 10 characters.";
+            state.formErrorKey = "support.err.bodyLen";
+            errorEl.textContent = t(
+              "support.err.bodyLen",
+              "Please enter a message of at least 10 characters.",
+            );
             errorEl.style.display = "block";
             return;
           }
 
-          /* Simulate submission */
+          // Simulate submission
+          state.isSending = true;
           submitBtn.disabled = true;
-          submitBtn.textContent = "Sending...";
+          renderSubmitButton();
 
           setTimeout(function () {
+            state.isSending = false;
             submitBtn.disabled = false;
-            submitBtn.innerHTML = [
-              '<svg width="16" height="16" fill="none" viewBox="0 0 24 24">',
-              '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
-              "</svg> Send Message",
-            ].join("");
+            renderSubmitButton();
 
-            /* Reset only message fields, keep name/email and subject for reference */
+            // Reset only message fields
             document.getElementById("fp-msg-body").value = "";
             document.getElementById("fp-msg-subject").value = "";
 
-            successEl.style.display = "flex";
-            successEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            if (successEl) {
+              successEl.style.display = "flex";
+              renderSuccessText();
+              successEl.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+              });
+            }
           }, 1000);
+        });
+
+        /* Live update without reload */
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+          // Keep current filter results + count consistent in new language
+          applyFaqFilter();
         });
       })();
     </script>
