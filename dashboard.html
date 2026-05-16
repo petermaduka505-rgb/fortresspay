@@ -575,128 +575,221 @@
       (function () {
         if (!initPage("dashboard")) return;
 
-        /* ---- Greeting ---- */
-        getUser()
-          .then(function (u) {
-            const greetEl = document.getElementById("fp-greeting");
-            const hour = new Date().getHours();
-            let timeGreet = "Good morning";
-            if (hour >= 12 && hour < 17) timeGreet = "Good afternoon";
-            else if (hour >= 17) timeGreet = "Good evening";
+        var state = { user: null, balance: null, txns: null };
 
-            greetEl.innerHTML = `
-          <p class="fp-greeting-sub">${timeGreet},</p>
-          <p class="fp-greeting-name">${u.firstName} ${u.lastName}</p>
-        `;
+        function applyStaticText() {
+          // Quick actions
+          var el;
+          el = document.querySelector(
+            '.fp-quick-action[href="transfer.html"] span',
+          );
+          if (el) el.textContent = t("nav.transfer", "Transfer");
 
-            /* Account details */
-            if (u.restricted) {
-              document
-                .getElementById("fp-restriction-card")
-                .classList.remove("fp-hidden");
-            }
+          el = document.querySelector('.fp-quick-action[href="pay.html"] span');
+          if (el) el.textContent = t("nav.pay", "Pay");
 
-            document.getElementById("fp-account-grid").innerHTML = `
-          <div class="fp-account-info-item">
-            <div class="fp-account-info-label">Account No.</div>
-            <div class="fp-account-info-val">${u.accountNumber}</div>
-          </div>
-          <div class="fp-account-info-item">
-            <div class="fp-account-info-label">Account Type</div>
-            <div class="fp-account-info-val">${u.accountType}</div>
-          </div>
-          <div class="fp-account-info-item">
-            <div class="fp-account-info-label">Routing No.</div>
-            <div class="fp-account-info-val">${u.routingNumber}</div>
-          </div>
-          <div class="fp-account-info-item">
-            <div class="fp-account-info-label">Member Since</div>
-            <div class="fp-account-info-val">${u.memberSince}</div>
-          </div>
-        `;
-          })
-          .catch(function () {});
+          el = document.querySelector(
+            '.fp-quick-action[href="statements.html"] span',
+          );
+          if (el) el.textContent = t("menu.statements", "Statements");
 
-        /* ---- Balance card ---- */
-        Promise.all([getBalance(), getUser()])
-          .then(function (results) {
-            const balance = results[0];
-            const u = results[1];
+          el = document.querySelector(
+            '.fp-quick-action[href="support.html"] span',
+          );
+          if (el) el.textContent = t("menu.support", "Support");
 
-            const formatted = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              minimumFractionDigits: 2,
-            }).format(balance);
+          // Recent Activity card
+          el = document.querySelector("#fp-recent-card .fp-section-card-title");
+          if (el) el.textContent = t("dash.recent.title", "Recent Activity");
 
-            const restrictedPill = u.restricted
-              ? `<div class="fp-restricted-pill"><span class="fp-restricted-pill-dot"></span>Transfers: U.S. only</div>`
-              : "";
+          el = document.querySelector("#fp-recent-card .fp-link");
+          if (el) el.textContent = t("dash.recent.viewAll", "View all");
 
-            document.getElementById("fp-balance-wrap").innerHTML = `
-          <div class="fp-balance-card">
-            <p class="fp-balance-label">Available Balance</p>
-            <p class="fp-balance-amount">${formatted}</p>
-            <div class="fp-balance-meta">
-              <div class="fp-balance-meta-item">
-                Account
-                <strong><span class="fp-account-chip">${u.accountType}</span></strong>
-              </div>
-              <div class="fp-balance-meta-item">
-                Account No.
-                <strong>${u.accountNumber}</strong>
-              </div>
+          // Account Details card title
+          el = document.querySelector(
+            "#fp-account-card .fp-section-card-title",
+          );
+          if (el) el.textContent = t("dash.details.title", "Account Details");
+
+          // Restriction card (static copy)
+          el = document.querySelector(
+            "#fp-restriction-card .fp-section-card-title",
+          );
+          if (el)
+            el.textContent = t("dash.restrict.title", "Account Restriction");
+
+          var ps = document.querySelectorAll("#fp-restriction-card p");
+          if (ps[0]) ps[0].textContent = t("dash.restrict.body");
+          if (ps[1]) ps[1].textContent = t("dash.restrict.help");
+
+          el = document.querySelector("#fp-restriction-card a.fp-btn");
+          if (el) el.textContent = t("dash.restrict.cta", "Contact Support");
+
+          // Security card (the one without an id; selected by exclusion)
+          var secCard = document.querySelector(
+            ".fp-desktop-two-col > div:nth-child(2) .fp-section-card:not(#fp-account-card):not(#fp-restriction-card)",
+          );
+          if (secCard) {
+            var title = secCard.querySelector(".fp-section-card-title");
+            if (title) title.textContent = t("dash.security.title", "Security");
+
+            var pList = secCard.querySelectorAll("p");
+            // Order in your HTML: encryption title, encryption sub, session title, session sub
+            if (pList[0])
+              pList[0].textContent = t(
+                "dash.security.encrypt.title",
+                "256-bit Encryption",
+              );
+            if (pList[1])
+              pList[1].textContent = t(
+                "dash.security.encrypt.sub",
+                "Your data is fully encrypted",
+              );
+            if (pList[2])
+              pList[2].textContent = t(
+                "dash.security.session.title",
+                "Session Protected",
+              );
+            if (pList[3])
+              pList[3].textContent = t(
+                "dash.security.session.sub",
+                "Auto-logout on inactivity",
+              );
+          }
+        }
+
+        function renderGreeting() {
+          if (!state.user) return;
+          var greetEl = document.getElementById("fp-greeting");
+          if (!greetEl) return;
+
+          var hour = new Date().getHours();
+          var key = "dash.greet.morning";
+          if (hour >= 12 && hour < 17) key = "dash.greet.afternoon";
+          else if (hour >= 17) key = "dash.greet.evening";
+
+          greetEl.innerHTML =
+            '<p class="fp-greeting-sub">' +
+            t(key) +
+            "</p>" +
+            '<p class="fp-greeting-name">' +
+            (state.user.firstName || "") +
+            " " +
+            (state.user.lastName || "") +
+            "</p>";
+        }
+
+        function renderAccountGrid() {
+          if (!state.user) return;
+
+          var u = state.user;
+          var grid = document.getElementById("fp-account-grid");
+          if (!grid) return;
+
+          if (u.restricted) {
+            var rcard = document.getElementById("fp-restriction-card");
+            if (rcard) rcard.classList.remove("fp-hidden");
+          }
+
+          grid.innerHTML = `
+        <div class="fp-account-info-item">
+          <div class="fp-account-info-label">${t("dash.details.accountNo", "Account No.")}</div>
+          <div class="fp-account-info-val">${u.accountNumber}</div>
+        </div>
+        <div class="fp-account-info-item">
+          <div class="fp-account-info-label">${t("dash.details.accountType", "Account Type")}</div>
+          <div class="fp-account-info-val">${u.accountType}</div>
+        </div>
+        <div class="fp-account-info-item">
+          <div class="fp-account-info-label">${t("dash.details.routingNo", "Routing No.")}</div>
+          <div class="fp-account-info-val">${u.routingNumber}</div>
+        </div>
+        <div class="fp-account-info-item">
+          <div class="fp-account-info-label">${t("dash.details.memberSince", "Member Since")}</div>
+          <div class="fp-account-info-val">${u.memberSince}</div>
+        </div>
+      `;
+        }
+
+        function renderBalance() {
+          if (state.balance == null || !state.user) return;
+
+          var u = state.user;
+          var wrap = document.getElementById("fp-balance-wrap");
+          if (!wrap) return;
+
+          var formatted = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+          }).format(state.balance);
+
+          var restrictedPill = u.restricted
+            ? `<div class="fp-restricted-pill"><span class="fp-restricted-pill-dot"></span>${t("dash.balance.pillUSOnly", "Transfers: U.S. only")}</div>`
+            : "";
+
+          wrap.innerHTML = `
+        <div class="fp-balance-card">
+          <p class="fp-balance-label">${t("dash.balance.available", "Available Balance")}</p>
+          <p class="fp-balance-amount">${formatted}</p>
+          <div class="fp-balance-meta">
+            <div class="fp-balance-meta-item">
+              ${t("dash.balance.account", "Account")}
+              <strong><span class="fp-account-chip">${u.accountType}</span></strong>
             </div>
-            ${restrictedPill}
+            <div class="fp-balance-meta-item">
+              ${t("dash.details.accountNo", "Account No.")}
+              <strong>${u.accountNumber}</strong>
+            </div>
+          </div>
+          ${restrictedPill}
+        </div>
+      `;
+        }
+
+        function renderRecent() {
+          if (!state.txns) return;
+
+          var skeleton = document.getElementById("fp-txn-skeleton");
+          var list = document.getElementById("fp-txn-list");
+          if (!list) return;
+
+          if (skeleton) skeleton.classList.add("fp-hidden");
+          list.classList.remove("fp-hidden");
+
+          if (!state.txns.length) {
+            list.innerHTML = `
+          <div class="fp-empty">
+            <div class="fp-empty-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="fp-empty-text">${t("dash.recent.empty", "No transactions yet.")}</p>
           </div>
         `;
-          })
-          .catch(function () {});
+            return;
+          }
 
-        /* ---- Recent transactions ---- */
-        getTransactions({ offset: 0, limit: 3 })
-          .then(function (result) {
-            document
-              .getElementById("fp-txn-skeleton")
-              .classList.add("fp-hidden");
-            const list = document.getElementById("fp-txn-list");
-            list.classList.remove("fp-hidden");
+          list.innerHTML = state.txns
+            .map(function (tx) {
+              var amt = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(tx.amount);
 
-            if (!result.items.length) {
-              list.innerHTML = `
-            <div class="fp-empty">
-              <div class="fp-empty-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <p class="fp-empty-text">No transactions yet.</p>
-            </div>
-          `;
-              return;
-            }
-
-            list.innerHTML = result.items
-              .map(function (t) {
-                const amt = new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(t.amount);
-
-                return `
-            <a href="transaction.html?id=${encodeURIComponent(t.id)}" class="fp-txn-item">
+              return `
+            <a href="transaction.html?id=${encodeURIComponent(tx.id)}" class="fp-txn-item">
               <div class="fp-txn-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
               <div class="fp-txn-info">
-                <p class="fp-txn-name">${t.sender}</p>
-                <p class="fp-txn-meta">${t.date} &middot; ${t.method}</p>
+                <p class="fp-txn-name">${tx.sender}</p>
+                <p class="fp-txn-meta">${tx.date} &middot; ${tx.method}</p>
               </div>
-              <div>
-                <p class="fp-txn-amount">+${amt}</p>
-              </div>
+              <div><p class="fp-txn-amount">+${amt}</p></div>
               <div class="fp-txn-chevron">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -704,20 +797,54 @@
               </div>
             </a>
           `;
-              })
-              .join("");
+            })
+            .join("");
 
-            /* View all row */
-            list.innerHTML += `
-          <a href="activity.html" class="fp-txn-item" style="justify-content:center;color:var(--fp-blue);font-size:0.875rem;font-weight:600;gap:6px;">
-            View all transactions
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        `;
+          list.innerHTML += `
+        <a href="activity.html" class="fp-txn-item" style="justify-content:center;color:var(--fp-blue);font-size:0.875rem;font-weight:600;gap:6px;">
+          ${t("dash.recent.viewAllTxns", "View all transactions")}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      `;
+        }
+
+        function renderAll() {
+          applyStaticText();
+          renderGreeting();
+          renderAccountGrid();
+          renderBalance();
+          renderRecent();
+        }
+
+        // Initial render (static bits first)
+        applyStaticText();
+
+        // Load data (cache in state; render when available)
+        getUser()
+          .then(function (u) {
+            state.user = u;
+            renderAll();
           })
           .catch(function () {});
+        getBalance()
+          .then(function (b) {
+            state.balance = b;
+            renderBalance();
+          })
+          .catch(function () {});
+        getTransactions({ offset: 0, limit: 3 })
+          .then(function (res) {
+            state.txns = res && res.items ? res.items : [];
+            renderRecent();
+          })
+          .catch(function () {});
+
+        // Re-translate/re-render without reload
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+        });
       })();
     </script>
   </body>
