@@ -8,12 +8,14 @@ const FP_CONFIG = {
   /* ------------------------------------------------------------------ */
   /*  CREDENTIALS — change email and password here only                  */
   /* ------------------------------------------------------------------ */
+  // lastName: "Chan",
+  //   firstName: "Eason",
   user: {
     id: "usr_001",
-    email: "eason.chan@gmail.com",
-    password: "easonch",
-    firstName: "Eason",
-    lastName: "Chan",
+    email: "easonchanyinkshun@gmail.com",
+    password: "EASONCHAN27",
+    firstName: "Margrate",
+    lastName: "Ola",
     phone: "+1 (908) 251-9984",
     address:
       "14F, Manning House, 38-48 Queen's Road Central, Central, Hong Kong",
