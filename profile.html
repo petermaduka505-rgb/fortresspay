@@ -46,25 +46,6 @@
         padding-bottom: 90px;
       }
 
-      /* ── Layout ── */
-      .fp-page {
-        padding: 24px 0 32px;
-      }
-      .fp-container-wide {
-        width: 100%;
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 0 16px;
-      }
-
-      /* ── Page heading ── */
-      .fp-page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--fp-text);
-        margin: 0 0 20px;
-      }
-
       /* ── Cards ── */
       .fp-section-card {
         background: var(--fp-surface);
@@ -284,15 +265,6 @@
       }
 
       /* ── Badges ── */
-      .fp-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px 10px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-      }
       .fp-badge-success {
         background: #dcfce7;
         color: #15803d;
@@ -777,6 +749,204 @@
       (function () {
         if (!initPage("profile")) return;
 
+        /* ================================================================ */
+        /*  I18N: page bundle                                                */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "profile.title": "Profile & Settings",
+
+            "profile.section.profile": "Profile",
+            "profile.section.security": "Security",
+            "profile.section.preferences": "Preferences",
+
+            "profile.info.fullName": "Full Name",
+            "profile.info.email": "Email Address",
+            "profile.info.accountNo": "Account Number",
+            "profile.info.routingNo": "Routing Number",
+            "profile.info.accountType": "Account Type",
+            "profile.info.accountStatus": "Account Status",
+
+            "profile.status.active": "Active",
+            "profile.status.restricted": "Restricted",
+
+            "profile.memberSincePrefix": "Member since ",
+            "profile.signedInAs": "Signed in as ",
+
+            "profile.restrictBannerHtml":
+              "<strong>Location restriction:</strong> Outgoing transfers and payments are unavailable from your current geographical location. Outgoing account features are supported only within domestic U.S. borders.",
+
+            "profile.security.password": "Password",
+            "profile.security.passwordSub":
+              "Last changed more than 90 days ago",
+            "profile.security.update": "Update",
+
+            "profile.security.passcodeBio": "Passcode & Biometrics",
+            "profile.security.passcodeBioSub":
+              "Manage app passcode and Face ID / Touch ID",
+            "profile.security.enabled": "Enabled",
+
+            "profile.security.twoFactor": "Two-Factor Authentication",
+            "profile.security.twoFactorSub": "SMS verification on sign-in",
+            "profile.security.activeBadge": "Active",
+
+            "profile.security.trustedDevices": "Trusted Devices",
+            "profile.security.trustedDevicesSub": "1 device — current session",
+            "profile.security.manage": "Manage",
+
+            "profile.security.sessions": "Active Sessions",
+            "profile.security.sessionsSub": "Signed in on this device only",
+            "profile.security.review": "Review",
+
+            "profile.prefs.push": "Push Notifications",
+            "profile.prefs.pushSub":
+              "Receive alerts for transactions and account activity",
+            "profile.prefs.emailStmt": "Email Statements",
+            "profile.prefs.emailStmtSub":
+              "Monthly statements delivered to your email",
+            "profile.prefs.txnAlerts": "Transaction Alerts",
+            "profile.prefs.txnAlertsSub":
+              "Instant notification for every debit or credit",
+            "profile.prefs.marketing": "Marketing & Promotions",
+            "profile.prefs.marketingSub":
+              "Offers, product updates, and account benefits",
+            "profile.prefs.lowBal": "Low Balance Alerts",
+            "profile.prefs.lowBalSub":
+              "Alert when balance falls below your threshold",
+
+            "profile.logout.title": "Sign Out",
+            "profile.logout.meta": "Sign out of your Fortress Pay account",
+
+            "profile.accountType.fixedDepositAccount": "Fixed Deposit Account",
+          },
+
+          "zh-Hans": {
+            "profile.title": "个人资料与设置",
+
+            "profile.section.profile": "个人资料",
+            "profile.section.security": "安全",
+            "profile.section.preferences": "偏好设置",
+
+            "profile.info.fullName": "姓名",
+            "profile.info.email": "邮箱地址",
+            "profile.info.accountNo": "账户号码",
+            "profile.info.routingNo": "路由号码",
+            "profile.info.accountType": "账户类型",
+            "profile.info.accountStatus": "账户状态",
+
+            "profile.status.active": "正常",
+            "profile.status.restricted": "受限",
+
+            "profile.memberSincePrefix": "加入时间：",
+            "profile.signedInAs": "当前登录：",
+
+            "profile.restrictBannerHtml":
+              "<strong>位置限制：</strong>根据您当前的地理位置，无法发起转账和付款。出账功能仅支持在美国境内使用。",
+
+            "profile.security.password": "密码",
+            "profile.security.passwordSub": "上次更改已超过90天",
+            "profile.security.update": "更新",
+
+            "profile.security.passcodeBio": "密码与生物识别",
+            "profile.security.passcodeBioSub": "管理应用密码以及面容ID/触控ID",
+            "profile.security.enabled": "已启用",
+
+            "profile.security.twoFactor": "双重验证",
+            "profile.security.twoFactorSub": "登录时短信验证",
+            "profile.security.activeBadge": "已激活",
+
+            "profile.security.trustedDevices": "受信任设备",
+            "profile.security.trustedDevicesSub": "1台设备 — 当前会话",
+            "profile.security.manage": "管理",
+
+            "profile.security.sessions": "活跃会话",
+            "profile.security.sessionsSub": "仅在本设备登录",
+            "profile.security.review": "查看",
+
+            "profile.prefs.push": "推送通知",
+            "profile.prefs.pushSub": "接收交易与账户活动提醒",
+            "profile.prefs.emailStmt": "邮箱对账单",
+            "profile.prefs.emailStmtSub": "每月对账单发送至您的邮箱",
+            "profile.prefs.txnAlerts": "交易提醒",
+            "profile.prefs.txnAlertsSub": "每笔借记或贷记即时通知",
+            "profile.prefs.marketing": "营销与推广",
+            "profile.prefs.marketingSub": "优惠、产品更新与账户权益",
+            "profile.prefs.lowBal": "低余额提醒",
+            "profile.prefs.lowBalSub": "余额低于阈值时提醒您",
+
+            "profile.logout.title": "退出登录",
+            "profile.logout.meta": "退出您的 Fortress Pay 账户",
+
+            "profile.accountType.fixedDepositAccount": "定期存款账户",
+          },
+
+          "zh-Hant": {
+            "profile.title": "個人資料與設定",
+
+            "profile.section.profile": "個人資料",
+            "profile.section.security": "安全",
+            "profile.section.preferences": "偏好設定",
+
+            "profile.info.fullName": "姓名",
+            "profile.info.email": "電子郵件地址",
+            "profile.info.accountNo": "帳戶號碼",
+            "profile.info.routingNo": "路由號碼",
+            "profile.info.accountType": "帳戶類型",
+            "profile.info.accountStatus": "帳戶狀態",
+
+            "profile.status.active": "正常",
+            "profile.status.restricted": "受限",
+
+            "profile.memberSincePrefix": "加入時間：",
+            "profile.signedInAs": "目前登入：",
+
+            "profile.restrictBannerHtml":
+              "<strong>位置限制：</strong>依據您目前的地理位置，無法發起轉帳與付款。出帳功能僅支援在美國境內使用。",
+
+            "profile.security.password": "密碼",
+            "profile.security.passwordSub": "上次變更已超過90天",
+            "profile.security.update": "更新",
+
+            "profile.security.passcodeBio": "密碼與生物辨識",
+            "profile.security.passcodeBioSub":
+              "管理應用密碼以及 Face ID / Touch ID",
+            "profile.security.enabled": "已啟用",
+
+            "profile.security.twoFactor": "雙重驗證",
+            "profile.security.twoFactorSub": "登入時簡訊驗證",
+            "profile.security.activeBadge": "已啟用",
+
+            "profile.security.trustedDevices": "受信任裝置",
+            "profile.security.trustedDevicesSub": "1台裝置 — 目前連線",
+            "profile.security.manage": "管理",
+
+            "profile.security.sessions": "活躍連線",
+            "profile.security.sessionsSub": "僅於本裝置登入",
+            "profile.security.review": "檢視",
+
+            "profile.prefs.push": "推播通知",
+            "profile.prefs.pushSub": "接收交易與帳戶活動提醒",
+            "profile.prefs.emailStmt": "電子郵件帳單",
+            "profile.prefs.emailStmtSub": "每月帳單寄送至您的電子郵件",
+            "profile.prefs.txnAlerts": "交易提醒",
+            "profile.prefs.txnAlertsSub": "每筆借記或貸記即時通知",
+            "profile.prefs.marketing": "行銷與推廣",
+            "profile.prefs.marketingSub": "優惠、產品更新與帳戶權益",
+            "profile.prefs.lowBal": "低餘額提醒",
+            "profile.prefs.lowBalSub": "餘額低於您的門檻時提醒您",
+
+            "profile.logout.title": "登出",
+            "profile.logout.meta": "登出您的 Fortress Pay 帳戶",
+
+            "profile.accountType.fixedDepositAccount": "定期存款帳戶",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State                                                            */
+        /* ================================================================ */
+        var state = { user: null };
+
         function byId(id) {
           return document.getElementById(id);
         }
@@ -799,25 +969,34 @@
           return f + l || "FP";
         }
 
-        // Returns "January 2017" from various formats.
+        function translateAccountType(v) {
+          var s = String(v || "").trim();
+          if (!s) return s;
+          if (s === "Fixed Deposit Account")
+            return t("profile.accountType.fixedDepositAccount", s);
+          return s; // unknown types unchanged
+        }
+
+        // Month/Year formatting (uses current language for nicer display)
         function formatMonthYear(value) {
           if (!value) return "";
           var raw = String(value).trim();
 
-          // If it already looks like "January 2017" or similar, keep it.
+          // If already "January 2017" etc., keep
           if (/[A-Za-z]/.test(raw) && /\d{4}/.test(raw)) return raw;
 
-          // Try parsing ISO / date-like strings
           var d = new Date(raw);
-          if (!isNaN(d.getTime())) {
-            return d.toLocaleDateString("en-US", {
-              month: "long",
-              year: "numeric",
-            });
-          }
+          if (isNaN(d.getTime())) return raw;
 
-          // Fallback: show raw
-          return raw;
+          var lang = getLang() || "en";
+          var locale = "en-US";
+          if (lang === "zh-Hans") locale = "zh-CN";
+          if (lang === "zh-Hant") locale = "zh-TW";
+
+          return d.toLocaleDateString(locale, {
+            month: "long",
+            year: "numeric",
+          });
         }
 
         function setStatus(isRestricted) {
@@ -826,10 +1005,14 @@
 
           if (isRestricted) {
             el.innerHTML =
-              '<span class="fp-status-pill fp-status-pill--restricted">Restricted</span>';
+              '<span class="fp-status-pill fp-status-pill--restricted">' +
+              t("profile.status.restricted", "Restricted") +
+              "</span>";
           } else {
             el.innerHTML =
-              '<span class="fp-status-pill fp-status-pill--active">Active</span>';
+              '<span class="fp-status-pill fp-status-pill--active">' +
+              t("profile.status.active", "Active") +
+              "</span>";
           }
         }
 
@@ -837,16 +1020,215 @@
           var banner = byId("fp-restricted-banner");
           if (!banner) return;
 
-          if (isRestricted) {
-            banner.classList.remove("fp-hidden");
-            banner.innerHTML =
-              "<strong>Location restriction:</strong> Outgoing transfers and payments are unavailable from your current geographical location. Outgoing account features are supported only within domestic U.S. borders.";
-          } else {
-            banner.classList.add("fp-hidden");
+          if (!isRestricted) {
+            banner.style.display = "none";
+            return;
+          }
+
+          banner.style.display = "flex";
+
+          // Keep the SVG, only update the text container
+          var span = banner.querySelector("span");
+          if (!span) {
+            span = document.createElement("span");
+            banner.appendChild(span);
+          }
+          span.innerHTML = t("profile.restrictBannerHtml");
+        }
+
+        function applyStaticText() {
+          // Page title
+          var pageTitle = document.querySelector(".fp-page-title");
+          if (pageTitle)
+            pageTitle.textContent = t("profile.title", pageTitle.textContent);
+
+          // Section titles (in order)
+          var titles = document.querySelectorAll(".fp-section-card-title");
+          if (titles[0])
+            titles[0].textContent = t(
+              "profile.section.profile",
+              titles[0].textContent,
+            );
+          if (titles[1])
+            titles[1].textContent = t(
+              "profile.section.security",
+              titles[1].textContent,
+            );
+          if (titles[2])
+            titles[2].textContent = t(
+              "profile.section.preferences",
+              titles[2].textContent,
+            );
+
+          // Info labels (6 rows, in order)
+          var infoLabels = document.querySelectorAll(".fp-info-label");
+          if (infoLabels[0])
+            infoLabels[0].textContent = t(
+              "profile.info.fullName",
+              infoLabels[0].textContent,
+            );
+          if (infoLabels[1])
+            infoLabels[1].textContent = t(
+              "profile.info.email",
+              infoLabels[1].textContent,
+            );
+          if (infoLabels[2])
+            infoLabels[2].textContent = t(
+              "profile.info.accountNo",
+              infoLabels[2].textContent,
+            );
+          if (infoLabels[3])
+            infoLabels[3].textContent = t(
+              "profile.info.routingNo",
+              infoLabels[3].textContent,
+            );
+          if (infoLabels[4])
+            infoLabels[4].textContent = t(
+              "profile.info.accountType",
+              infoLabels[4].textContent,
+            );
+          if (infoLabels[5])
+            infoLabels[5].textContent = t(
+              "profile.info.accountStatus",
+              infoLabels[5].textContent,
+            );
+
+          // Security items (5, in order)
+          var secItems = document.querySelectorAll(".fp-security-item");
+          if (secItems[0]) {
+            secItems[0].querySelector(".fp-security-label").textContent = t(
+              "profile.security.password",
+              "Password",
+            );
+            secItems[0].querySelector(".fp-security-sub").textContent = t(
+              "profile.security.passwordSub",
+            );
+            var btn = secItems[0].querySelector("button");
+            if (btn)
+              btn.textContent = t("profile.security.update", btn.textContent);
+          }
+          if (secItems[1]) {
+            secItems[1].querySelector(".fp-security-label").textContent = t(
+              "profile.security.passcodeBio",
+            );
+            secItems[1].querySelector(".fp-security-sub").textContent = t(
+              "profile.security.passcodeBioSub",
+            );
+            var badge = secItems[1].querySelector(".fp-badge");
+            if (badge)
+              badge.textContent = t(
+                "profile.security.enabled",
+                badge.textContent,
+              );
+          }
+          if (secItems[2]) {
+            secItems[2].querySelector(".fp-security-label").textContent = t(
+              "profile.security.twoFactor",
+            );
+            secItems[2].querySelector(".fp-security-sub").textContent = t(
+              "profile.security.twoFactorSub",
+            );
+            var badge2 = secItems[2].querySelector(".fp-badge");
+            if (badge2)
+              badge2.textContent = t(
+                "profile.security.activeBadge",
+                badge2.textContent,
+              );
+          }
+          if (secItems[3]) {
+            secItems[3].querySelector(".fp-security-label").textContent = t(
+              "profile.security.trustedDevices",
+            );
+            secItems[3].querySelector(".fp-security-sub").textContent = t(
+              "profile.security.trustedDevicesSub",
+            );
+            var btn2 = secItems[3].querySelector("button");
+            if (btn2)
+              btn2.textContent = t("profile.security.manage", btn2.textContent);
+          }
+          if (secItems[4]) {
+            secItems[4].querySelector(".fp-security-label").textContent = t(
+              "profile.security.sessions",
+            );
+            secItems[4].querySelector(".fp-security-sub").textContent = t(
+              "profile.security.sessionsSub",
+            );
+            var btn3 = secItems[4].querySelector("button");
+            if (btn3)
+              btn3.textContent = t("profile.security.review", btn3.textContent);
+          }
+
+          // Preferences toggles (5, in order)
+          var toggles = document.querySelectorAll(".fp-toggle-row");
+          if (toggles[0]) {
+            toggles[0].querySelector(".fp-toggle-label").textContent =
+              t("profile.prefs.push");
+            toggles[0].querySelector(".fp-toggle-sub").textContent = t(
+              "profile.prefs.pushSub",
+            );
+          }
+          if (toggles[1]) {
+            toggles[1].querySelector(".fp-toggle-label").textContent = t(
+              "profile.prefs.emailStmt",
+            );
+            toggles[1].querySelector(".fp-toggle-sub").textContent = t(
+              "profile.prefs.emailStmtSub",
+            );
+          }
+          if (toggles[2]) {
+            toggles[2].querySelector(".fp-toggle-label").textContent = t(
+              "profile.prefs.txnAlerts",
+            );
+            toggles[2].querySelector(".fp-toggle-sub").textContent = t(
+              "profile.prefs.txnAlertsSub",
+            );
+          }
+          if (toggles[3]) {
+            toggles[3].querySelector(".fp-toggle-label").textContent = t(
+              "profile.prefs.marketing",
+            );
+            toggles[3].querySelector(".fp-toggle-sub").textContent = t(
+              "profile.prefs.marketingSub",
+            );
+          }
+          if (toggles[4]) {
+            toggles[4].querySelector(".fp-toggle-label").textContent = t(
+              "profile.prefs.lowBal",
+            );
+            toggles[4].querySelector(".fp-toggle-sub").textContent = t(
+              "profile.prefs.lowBalSub",
+            );
+          }
+
+          // Logout card
+          var logoutTitle = document.querySelector(
+            ".fp-logout-row > div > div",
+          );
+          if (logoutTitle)
+            logoutTitle.textContent = t(
+              "profile.logout.title",
+              logoutTitle.textContent,
+            );
+
+          // Default logout meta (will be overwritten with "Signed in as ..." once user loads)
+          var meta = byId("fp-logout-meta");
+          if (meta)
+            meta.textContent = t("profile.logout.meta", meta.textContent);
+
+          // Logout button text (keep SVG)
+          var logoutBtn = byId("fp-logout-btn");
+          if (logoutBtn) {
+            var tn = Array.from(logoutBtn.childNodes).find(function (n) {
+              return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+            });
+            if (tn)
+              tn.textContent = " " + t("profile.logout.title", "Sign Out");
           }
         }
 
         function populate(u) {
+          if (!u) return;
+
           var fullName =
             [u.firstName, u.lastName].filter(Boolean).join(" ") || "—";
 
@@ -858,14 +1240,20 @@
           setText("fp-email", u.email);
 
           var monthYear = formatMonthYear(u.memberSince);
+
           var sinceEl = byId("fp-member-since");
-          if (sinceEl)
-            sinceEl.textContent = monthYear ? "Member since " + monthYear : "";
+          if (sinceEl) {
+            if (monthYear)
+              sinceEl.textContent =
+                t("profile.memberSincePrefix", "Member since ") + monthYear;
+            else sinceEl.textContent = "";
+          }
 
           var memberBadge = byId("fp-member-badge");
           if (memberBadge) {
             if (monthYear) {
-              memberBadge.textContent = "Member since " + monthYear;
+              memberBadge.textContent =
+                t("profile.memberSincePrefix", "Member since ") + monthYear;
               memberBadge.style.display = "inline-flex";
             } else {
               memberBadge.style.display = "none";
@@ -876,22 +1264,35 @@
           setText("fp-email-val", u.email);
           setText("fp-acct-val", maskAccount(u.accountNumber));
           setText("fp-routing-val", u.routingNumber);
-          setText("fp-acct-type-val", u.accountType); // keep as-is
+          setText("fp-acct-type-val", translateAccountType(u.accountType)); // translated known types
 
           setStatus(!!u.restricted);
           showRestrictionBanner(!!u.restricted);
 
-          setText("fp-logout-meta", "Signed in as " + (u.email || fullName));
+          // Logout meta: Signed in as ...
+          var meta = byId("fp-logout-meta");
+          if (meta)
+            meta.textContent =
+              t("profile.signedInAs", "Signed in as ") + (u.email || fullName);
         }
 
+        function renderAll() {
+          applyStaticText();
+          if (state.user) populate(state.user); // re-apply translated dynamic strings
+        }
+
+        // Initial paint
+        renderAll();
+
+        // Load user
         getUser()
           .then(function (u) {
+            state.user = u;
             populate(u);
           })
-          .catch(function () {
-            // do nothing
-          });
+          .catch(function () {});
 
+        // Logout click
         var logoutBtn = byId("fp-logout-btn");
         if (logoutBtn) {
           logoutBtn.addEventListener("click", function () {
@@ -907,6 +1308,11 @@
             location.href = "login.html";
           });
         }
+
+        // Live update without reload
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+        });
       })();
     </script>
   </body>
