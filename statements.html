@@ -691,64 +691,353 @@
     <script src="js/common.js"></script>
     <script>
       (function () {
-        if (!initPage("dashboard")) return;
+        if (!initPage("statements")) return;
 
-        /* ---- Set default dates ---- */
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), 0, 1);
-        document.getElementById("fp-from").value = firstDay
-          .toISOString()
-          .slice(0, 10);
-        document.getElementById("fp-to").value = today
-          .toISOString()
-          .slice(0, 10);
+        /* ================================================================ */
+        /*  I18N: page bundle                                                */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "statements.backAria": "Back to dashboard",
+            "statements.title": "Account Statements",
+            "statements.subtitle": "Request and manage your account statements",
+
+            "statements.success.title": "Statement Request Submitted",
+            "statements.success.detailDefault":
+              "Your statement will be delivered to your email within 1-2 business days.",
+            "statements.success.detailTemplate":
+              "A statement from {from} to {to} will be sent to {email} within 1-2 business days.",
+
+            "statements.card.title": "Request a Statement",
+            "statements.card.sub": "Choose a date range and delivery format",
+
+            "statements.from": "From Date",
+            "statements.to": "To Date",
+            "statements.email": "Delivery Email",
+            "statements.emailPh": "you@example.com",
+
+            "statements.format": "Delivery Format",
+            "statements.format.pdf": "PDF",
+            "statements.format.pdfSub": "Printable format",
+            "statements.format.csv": "CSV",
+            "statements.format.csvSub": "Spreadsheet format",
+            "statements.format.both": "Both",
+            "statements.format.bothSub": "PDF and CSV",
+
+            "statements.notes": "Additional Notes",
+            "statements.optional": "(optional)",
+            "statements.notesPh":
+              "Any specific requirements for this statement...",
+
+            "statements.submit": "Submit Statement Request",
+            "statements.tip":
+              "Statements are typically delivered within 1-2 business days.",
+
+            "statements.history.title": "Previous Requests",
+            "statements.history.count.one": "{n} request",
+            "statements.history.count.other": "{n} requests",
+            "statements.history.empty": "No prior requests on record.",
+            "statements.history.requested": "Requested {date}",
+
+            "statements.tile.history.title": "History Available",
+            "statements.tile.history.text":
+              "Statements are available from January 2017 to present.",
+            "statements.tile.secure.title": "Secure Delivery",
+            "statements.tile.secure.text":
+              "Statements are encrypted and sent only to your verified email address.",
+            "statements.tile.time.title": "Processing Time",
+            "statements.tile.time.text":
+              "Allow 1-2 business days for your statement to be generated and sent.",
+            "statements.tile.confirm.title": "Email Confirmation",
+            "statements.tile.confirm.text":
+              "You will receive a confirmation email once your statement is ready.",
+
+            "statements.err.fromRequired": "Please select a start date.",
+            "statements.err.toRequired": "Please select an end date.",
+            "statements.err.toAfterFrom":
+              "End date must be after the start date.",
+            "statements.err.fromMin":
+              "Statement history is available from January 2017 onwards.",
+            "statements.err.toFuture": "End date cannot be in the future.",
+            "statements.err.emailRequired":
+              "Please enter a delivery email address.",
+            "statements.err.emailInvalid":
+              "Please enter a valid email address.",
+            "statements.err.generic":
+              "An unexpected error occurred. Please try again.",
+          },
+
+          "zh-Hans": {
+            "statements.backAria": "返回仪表板",
+            "statements.title": "账户对账单",
+            "statements.subtitle": "申请并管理您的账户对账单",
+
+            "statements.success.title": "对账单申请已提交",
+            "statements.success.detailDefault":
+              "对账单将在1-2个工作日内发送至您的邮箱。",
+            "statements.success.detailTemplate":
+              "将于1-2个工作日内把 {from} 至 {to} 的对账单发送至 {email}。",
+
+            "statements.card.title": "申请对账单",
+            "statements.card.sub": "选择日期范围与发送格式",
+
+            "statements.from": "起始日期",
+            "statements.to": "结束日期",
+            "statements.email": "接收邮箱",
+            "statements.emailPh": "you@example.com",
+
+            "statements.format": "发送格式",
+            "statements.format.pdf": "PDF",
+            "statements.format.pdfSub": "可打印格式",
+            "statements.format.csv": "CSV",
+            "statements.format.csvSub": "表格格式",
+            "statements.format.both": "两者",
+            "statements.format.bothSub": "PDF 和 CSV",
+
+            "statements.notes": "附加说明",
+            "statements.optional": "（可选）",
+            "statements.notesPh": "如有特殊要求，请在此说明...",
+
+            "statements.submit": "提交对账单申请",
+            "statements.tip": "对账单通常在1-2个工作日内送达。",
+
+            "statements.history.title": "历史申请",
+            "statements.history.count.one": "{n} 条",
+            "statements.history.count.other": "{n} 条",
+            "statements.history.empty": "暂无历史申请记录。",
+            "statements.history.requested": "申请时间：{date}",
+
+            "statements.tile.history.title": "历史可查",
+            "statements.tile.history.text": "可查询自2017年1月至今的对账单。",
+            "statements.tile.secure.title": "安全投递",
+            "statements.tile.secure.text":
+              "对账单加密发送，仅投递至已验证邮箱。",
+            "statements.tile.time.title": "处理时间",
+            "statements.tile.time.text": "生成并发送对账单需1-2个工作日。",
+            "statements.tile.confirm.title": "邮件确认",
+            "statements.tile.confirm.text":
+              "对账单准备就绪后，您将收到确认邮件。",
+
+            "statements.err.fromRequired": "请选择起始日期。",
+            "statements.err.toRequired": "请选择结束日期。",
+            "statements.err.toAfterFrom": "结束日期必须晚于起始日期。",
+            "statements.err.fromMin": "对账单历史可从2017年1月起查询。",
+            "statements.err.toFuture": "结束日期不能晚于今天。",
+            "statements.err.emailRequired": "请输入接收邮箱地址。",
+            "statements.err.emailInvalid": "请输入有效的邮箱地址。",
+            "statements.err.generic": "发生错误，请重试。",
+          },
+
+          "zh-Hant": {
+            "statements.backAria": "返回儀表板",
+            "statements.title": "帳戶對帳單",
+            "statements.subtitle": "申請並管理您的帳戶對帳單",
+
+            "statements.success.title": "對帳單申請已提交",
+            "statements.success.detailDefault":
+              "對帳單將於1-2個工作日內寄送至您的電子郵件。",
+            "statements.success.detailTemplate":
+              "將於1-2個工作日內把 {from} 至 {to} 的對帳單寄送至 {email}。",
+
+            "statements.card.title": "申請對帳單",
+            "statements.card.sub": "選擇日期範圍與寄送格式",
+
+            "statements.from": "起始日期",
+            "statements.to": "結束日期",
+            "statements.email": "收件電子郵件",
+            "statements.emailPh": "you@example.com",
+
+            "statements.format": "寄送格式",
+            "statements.format.pdf": "PDF",
+            "statements.format.pdfSub": "可列印格式",
+            "statements.format.csv": "CSV",
+            "statements.format.csvSub": "試算表格式",
+            "statements.format.both": "兩者",
+            "statements.format.bothSub": "PDF 與 CSV",
+
+            "statements.notes": "附加說明",
+            "statements.optional": "（選填）",
+            "statements.notesPh": "如有特殊需求，請在此說明...",
+
+            "statements.submit": "提交對帳單申請",
+            "statements.tip": "對帳單通常於1-2個工作日內送達。",
+
+            "statements.history.title": "歷史申請",
+            "statements.history.count.one": "{n} 筆",
+            "statements.history.count.other": "{n} 筆",
+            "statements.history.empty": "目前沒有歷史申請紀錄。",
+            "statements.history.requested": "申請時間：{date}",
+
+            "statements.tile.history.title": "歷史可查",
+            "statements.tile.history.text": "可查詢自2017年1月至今的對帳單。",
+            "statements.tile.secure.title": "安全寄送",
+            "statements.tile.secure.text":
+              "對帳單加密寄送，僅寄至已驗證電子郵件。",
+            "statements.tile.time.title": "處理時間",
+            "statements.tile.time.text": "產生並寄送對帳單需1-2個工作日。",
+            "statements.tile.confirm.title": "郵件確認",
+            "statements.tile.confirm.text":
+              "對帳單準備完成後，您將收到確認郵件。",
+
+            "statements.err.fromRequired": "請選擇起始日期。",
+            "statements.err.toRequired": "請選擇結束日期。",
+            "statements.err.toAfterFrom": "結束日期必須晚於起始日期。",
+            "statements.err.fromMin": "對帳單歷史可自2017年1月起查詢。",
+            "statements.err.toFuture": "結束日期不能晚於今天。",
+            "statements.err.emailRequired": "請輸入收件電子郵件地址。",
+            "statements.err.emailInvalid": "請輸入有效的電子郵件地址。",
+            "statements.err.generic": "發生錯誤，請重試。",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State                                                            */
+        /* ================================================================ */
+        var state = {
+          userEmail: "",
+          // store error keys so they can re-translate on fp:langchange
+          fieldErrorKey: { "fp-from": "", "fp-to": "", "fp-email": "" },
+          formErrorKey: "",
+          formErrorRaw: "",
+
+          // store last success params so detail can re-translate
+          success: { visible: false, from: "", to: "", email: "" },
+        };
+
+        function localeForLang() {
+          var lang = getLang() || "en";
+          if (lang === "zh-Hans") return "zh-CN";
+          if (lang === "zh-Hant") return "zh-TW";
+          return "en-US";
+        }
+
+        function fmt(template, vars) {
+          return String(template || "").replace(/\{(\w+)\}/g, function (_, k) {
+            return vars && vars[k] != null ? String(vars[k]) : "";
+          });
+        }
+
+        function setAttr(sel, attr, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var fb = fallback != null ? fallback : el.getAttribute(attr) || "";
+          el.setAttribute(attr, t(key, fb));
+        }
+
+        function setText(sel, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          el.textContent = t(key, fallback != null ? fallback : el.textContent);
+        }
+
+        function setLabelText(forId, key, fallback) {
+          var label = document.querySelector('label[for="' + forId + '"]');
+          if (!label) return;
+
+          // keep required <span> intact
+          var nodes = Array.from(label.childNodes);
+          var textNode = nodes.find(function (n) {
+            return n.nodeType === Node.TEXT_NODE;
+          });
+
+          var translated = t(key, fallback || "").trim();
+          if (!textNode) {
+            textNode = document.createTextNode(translated + " ");
+            label.insertBefore(textNode, label.firstChild);
+          } else {
+            textNode.textContent = translated + " ";
+          }
+        }
+
+        function setInlineTextWithSvg(el, key, fallback) {
+          if (!el) return;
+          var tn = Array.from(el.childNodes).find(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          var txt = t(key, fallback || "").trim() + " ";
+          if (tn) tn.textContent = " " + txt;
+          else el.appendChild(document.createTextNode(" " + txt));
+        }
+
+        /* ---- Default dates ---- */
+        var today = new Date();
+        var firstDay = new Date(today.getFullYear(), 0, 1);
+
+        function setDefaultDates() {
+          var fromEl = document.getElementById("fp-from");
+          var toEl = document.getElementById("fp-to");
+          if (fromEl) fromEl.value = firstDay.toISOString().slice(0, 10);
+          if (toEl) toEl.value = today.toISOString().slice(0, 10);
+        }
+        setDefaultDates();
 
         /* ---- Prefill email ---- */
         getUser()
           .then(function (u) {
-            document.getElementById("fp-email").value = u.email;
+            state.userEmail = u.email || "";
+            var emailEl = document.getElementById("fp-email");
+            if (emailEl && state.userEmail) emailEl.value = state.userEmail;
           })
           .catch(function () {});
 
-        /* ---- Load history ---- */
+        /* ================================================================ */
+        /*  History                                                          */
+        /* ================================================================ */
+        function historyCountText(n) {
+          var key =
+            n === 1
+              ? "statements.history.count.one"
+              : "statements.history.count.other";
+          return fmt(t(key), { n: n });
+        }
+
         function loadHistory() {
           getStatementRequests()
             .then(function (requests) {
-              const body = document.getElementById("fp-history-body");
-              const counter = document.getElementById("fp-history-count");
+              var body = document.getElementById("fp-history-body");
+              var counter = document.getElementById("fp-history-count");
+              if (!body || !counter) return;
+
+              requests = requests || [];
 
               if (!requests.length) {
                 counter.textContent = "";
-                body.innerHTML = `
-              <div class="fp-empty" style="padding:28px 20px;">
-                <div class="fp-empty-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <p class="fp-empty-text">No prior requests on record.</p>
-              </div>
-            `;
+                body.innerHTML =
+                  '<div class="fp-empty" style="padding:28px 20px;">' +
+                  '<div class="fp-empty-icon">' +
+                  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+                  '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+                  '<path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+                  "</svg>" +
+                  "</div>" +
+                  '<p class="fp-empty-text">' +
+                  t(
+                    "statements.history.empty",
+                    "No prior requests on record.",
+                  ) +
+                  "</p>" +
+                  "</div>";
                 return;
               }
 
-              counter.textContent =
-                requests.length + " request" + (requests.length > 1 ? "s" : "");
+              counter.textContent = historyCountText(requests.length);
+
+              var locale = localeForLang();
 
               body.innerHTML = requests
                 .map(function (r) {
-                  const fromDate = new Date(r.from).toLocaleDateString(
-                    "en-US",
-                    { month: "short", day: "numeric", year: "numeric" },
-                  );
-                  const toDate = new Date(r.to).toLocaleDateString("en-US", {
+                  var fromDate = new Date(r.from).toLocaleDateString(locale, {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   });
-                  const reqDate = new Date(r.requestedAt).toLocaleDateString(
-                    "en-US",
+                  var toDate = new Date(r.to).toLocaleDateString(locale, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                  var reqDate = new Date(r.requestedAt).toLocaleDateString(
+                    locale,
                     {
                       month: "short",
                       day: "numeric",
@@ -758,21 +1047,38 @@
                     },
                   );
 
-                  return `
-              <div class="fp-history-row">
-                <div class="fp-history-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M14 2v6h6M16 13H8M16 17H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div class="fp-history-info">
-                  <p class="fp-history-range">${fromDate} &ndash; ${toDate}</p>
-                  <p class="fp-history-meta">Requested ${reqDate} &middot; <span style="color:var(--fp-amber);font-weight:600;">${r.status}</span></p>
-                </div>
-                <span class="fp-badge-status fp-badge-processing">${r.status}</span>
-              </div>
-            `;
+                  var requestedLine = fmt(
+                    t("statements.history.requested", "Requested {date}"),
+                    {
+                      date: reqDate,
+                    },
+                  );
+
+                  return (
+                    '<div class="fp-history-row">' +
+                    '<div class="fp-history-icon">' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+                    '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+                    '<path d="M14 2v6h6M16 13H8M16 17H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+                    "</svg>" +
+                    "</div>" +
+                    '<div class="fp-history-info">' +
+                    '<p class="fp-history-range">' +
+                    fromDate +
+                    " &ndash; " +
+                    toDate +
+                    "</p>" +
+                    '<p class="fp-history-meta">' +
+                    requestedLine +
+                    ' &middot; <span style="color:var(--fp-amber);font-weight:600;">' +
+                    (r.status || "") +
+                    "</span></p>" +
+                    "</div>" +
+                    '<span class="fp-badge-status fp-badge-processing">' +
+                    (r.status || "") +
+                    "</span>" +
+                    "</div>"
+                  );
                 })
                 .join("");
             })
@@ -781,10 +1087,17 @@
 
         loadHistory();
 
-        /* ---- Form validation helpers ---- */
-        function setFieldError(fieldId, msg) {
-          const errEl = document.getElementById(fieldId + "-error");
-          const inputEl = document.getElementById(fieldId);
+        /* ================================================================ */
+        /*  Errors (store keys so they re-translate live)                    */
+        /* ================================================================ */
+        function setFieldError(fieldId, msgKey, fallback) {
+          state.fieldErrorKey[fieldId] = msgKey || "";
+
+          var errEl = document.getElementById(fieldId + "-error");
+          var inputEl = document.getElementById(fieldId);
+
+          var msg = msgKey ? t(msgKey, fallback || "") : "";
+
           if (errEl) {
             errEl.textContent = msg;
             errEl.classList.toggle("fp-hidden", !msg);
@@ -794,37 +1107,309 @@
 
         function clearErrors() {
           ["fp-from", "fp-to", "fp-email"].forEach(function (id) {
-            setFieldError(id, "");
+            setFieldError(id, "", "");
           });
-          const fe = document.getElementById("fp-form-error");
-          fe.classList.add("fp-hidden");
+
+          state.formErrorKey = "";
+          state.formErrorRaw = "";
+
+          var fe = document.getElementById("fp-form-error");
+          if (fe) fe.classList.add("fp-hidden");
+
+          var ft = document.getElementById("fp-form-error-text");
+          if (ft) ft.textContent = "";
         }
 
-        function showFormError(msg) {
-          const fe = document.getElementById("fp-form-error");
-          document.getElementById("fp-form-error-text").textContent = msg;
+        function showFormError(msgKeyOrEmpty, rawTextOrEmpty, fallback) {
+          var fe = document.getElementById("fp-form-error");
+          var ft = document.getElementById("fp-form-error-text");
+          if (!fe || !ft) return;
+
+          state.formErrorKey = msgKeyOrEmpty || "";
+          state.formErrorRaw = rawTextOrEmpty || "";
+
+          ft.textContent = state.formErrorRaw
+            ? state.formErrorRaw
+            : t(state.formErrorKey, fallback || "");
+
           fe.classList.remove("fp-hidden");
         }
 
-        /* ---- Form submission ---- */
+        function rerenderErrors() {
+          ["fp-from", "fp-to", "fp-email"].forEach(function (id) {
+            var k = state.fieldErrorKey[id];
+            if (k) setFieldError(id, k);
+          });
+
+          if (state.formErrorRaw) {
+            // raw API error -> keep raw
+            showFormError("", state.formErrorRaw);
+          } else if (state.formErrorKey) {
+            showFormError(state.formErrorKey, "", t(state.formErrorKey));
+          }
+        }
+
+        /* ================================================================ */
+        /*  Success message (rebuild on lang change)                         */
+        /* ================================================================ */
+        function renderSuccess() {
+          var box = document.getElementById("fp-submit-success");
+          if (!box) return;
+
+          // Title
+          var titleP = box.querySelector("p");
+          if (titleP)
+            titleP.textContent = t(
+              "statements.success.title",
+              titleP.textContent,
+            );
+
+          // Detail
+          var detail = document.getElementById("fp-success-detail");
+          if (!detail) return;
+
+          if (!state.success.visible) {
+            detail.textContent = t(
+              "statements.success.detailDefault",
+              detail.textContent,
+            );
+            return;
+          }
+
+          var locale = localeForLang();
+          var fromFmt = new Date(state.success.from).toLocaleDateString(
+            locale,
+            {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            },
+          );
+          var toFmt = new Date(state.success.to).toLocaleDateString(locale, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          });
+
+          var msg = fmt(t("statements.success.detailTemplate"), {
+            from: fromFmt,
+            to: toFmt,
+            email: state.success.email,
+          });
+
+          detail.textContent = msg;
+        }
+
+        /* ================================================================ */
+        /*  Static text                                                      */
+        /* ================================================================ */
+        function applyStaticText() {
+          // Header
+          setAttr(
+            ".fp-back-btn",
+            "aria-label",
+            "statements.backAria",
+            "Back to dashboard",
+          );
+          setText(".fp-page-title", "statements.title", "Account Statements");
+          setText(".fp-page-subtitle", "statements.subtitle");
+
+          // Success block (even when hidden, keep translated for next show)
+          renderSuccess();
+
+          // Form card header
+          setText(
+            "#fp-stmt-form-card .fp-form-card-title",
+            "statements.card.title",
+            "Request a Statement",
+          );
+          setText(
+            "#fp-stmt-form-card .fp-form-card-sub",
+            "statements.card.sub",
+          );
+
+          // Labels
+          setLabelText("fp-from", "statements.from", "From Date");
+          setLabelText("fp-to", "statements.to", "To Date");
+          setLabelText("fp-email", "statements.email", "Delivery Email");
+
+          setAttr(
+            "#fp-email",
+            "placeholder",
+            "statements.emailPh",
+            "you@example.com",
+          );
+
+          // Delivery Format label (no for=)
+          var formatLabel = Array.from(
+            document.querySelectorAll("#fp-stmt-form-card .fp-label"),
+          ).find(function (el) {
+            return (
+              el &&
+              !el.getAttribute("for") &&
+              el.textContent.trim() === "Delivery Format"
+            );
+          });
+          if (formatLabel)
+            formatLabel.textContent = t(
+              "statements.format",
+              formatLabel.textContent,
+            );
+
+          // Format option labels/subs (3 options)
+          var optLabels = document.querySelectorAll(".fp-format-option-label");
+          var optSubs = document.querySelectorAll(".fp-format-option-sub");
+          if (optLabels[0])
+            optLabels[0].textContent = t(
+              "statements.format.pdf",
+              optLabels[0].textContent,
+            );
+          if (optSubs[0])
+            optSubs[0].textContent = t(
+              "statements.format.pdfSub",
+              optSubs[0].textContent,
+            );
+          if (optLabels[1])
+            optLabels[1].textContent = t(
+              "statements.format.csv",
+              optLabels[1].textContent,
+            );
+          if (optSubs[1])
+            optSubs[1].textContent = t(
+              "statements.format.csvSub",
+              optSubs[1].textContent,
+            );
+          if (optLabels[2])
+            optLabels[2].textContent = t(
+              "statements.format.both",
+              optLabels[2].textContent,
+            );
+          if (optSubs[2])
+            optSubs[2].textContent = t(
+              "statements.format.bothSub",
+              optSubs[2].textContent,
+            );
+
+          // Notes label + optional span
+          var notesLabel = document.querySelector('label[for="fp-stmt-note"]');
+          if (notesLabel) {
+            var nodes = Array.from(notesLabel.childNodes);
+            var textNode = nodes.find(function (n) {
+              return n.nodeType === Node.TEXT_NODE;
+            });
+            if (textNode)
+              textNode.textContent =
+                t("statements.notes", "Additional Notes") + " ";
+
+            var optSpan = notesLabel.querySelector("span");
+            if (optSpan)
+              optSpan.textContent = t("statements.optional", "(optional)");
+          }
+          setAttr("#fp-stmt-note", "placeholder", "statements.notesPh");
+
+          // Submit button (SVG + text)
+          setInlineTextWithSvg(
+            document.getElementById("fp-submit-btn"),
+            "statements.submit",
+            "Submit Statement Request",
+          );
+
+          // Tip line (the small paragraph under the button)
+          var tipP = document.querySelector("#fp-stmt-form-card form > p");
+          if (tipP) tipP.textContent = t("statements.tip", tipP.textContent);
+
+          // History title
+          setText(
+            "#fp-history-card .fp-history-card-title",
+            "statements.history.title",
+            "Previous Requests",
+          );
+
+          // Info tiles (4 tiles)
+          var tileTitles = document.querySelectorAll(".fp-info-tile-title");
+          var tileTexts = document.querySelectorAll(".fp-info-tile-text");
+          if (tileTitles[0])
+            tileTitles[0].textContent = t(
+              "statements.tile.history.title",
+              tileTitles[0].textContent,
+            );
+          if (tileTexts[0])
+            tileTexts[0].textContent = t(
+              "statements.tile.history.text",
+              tileTexts[0].textContent,
+            );
+
+          if (tileTitles[1])
+            tileTitles[1].textContent = t(
+              "statements.tile.secure.title",
+              tileTitles[1].textContent,
+            );
+          if (tileTexts[1])
+            tileTexts[1].textContent = t(
+              "statements.tile.secure.text",
+              tileTexts[1].textContent,
+            );
+
+          if (tileTitles[2])
+            tileTitles[2].textContent = t(
+              "statements.tile.time.title",
+              tileTitles[2].textContent,
+            );
+          if (tileTexts[2])
+            tileTexts[2].textContent = t(
+              "statements.tile.time.text",
+              tileTexts[2].textContent,
+            );
+
+          if (tileTitles[3])
+            tileTitles[3].textContent = t(
+              "statements.tile.confirm.title",
+              tileTitles[3].textContent,
+            );
+          if (tileTexts[3])
+            tileTexts[3].textContent = t(
+              "statements.tile.confirm.text",
+              tileTexts[3].textContent,
+            );
+        }
+
+        function renderAll() {
+          applyStaticText();
+          rerenderErrors();
+        }
+
+        // Initial paint (translated UI immediately)
+        renderAll();
+
+        /* ================================================================ */
+        /*  Form submission                                                  */
+        /* ================================================================ */
         document
           .getElementById("fp-stmt-form")
           .addEventListener("submit", function (e) {
             e.preventDefault();
             clearErrors();
 
-            const from = document.getElementById("fp-from").value;
-            const to = document.getElementById("fp-to").value;
-            const email = document.getElementById("fp-email").value.trim();
+            var from = document.getElementById("fp-from").value;
+            var to = document.getElementById("fp-to").value;
+            var email = document.getElementById("fp-email").value.trim();
 
-            let valid = true;
+            var valid = true;
 
             if (!from) {
-              setFieldError("fp-from", "Please select a start date.");
+              setFieldError(
+                "fp-from",
+                "statements.err.fromRequired",
+                "Please select a start date.",
+              );
               valid = false;
             }
             if (!to) {
-              setFieldError("fp-to", "Please select an end date.");
+              setFieldError(
+                "fp-to",
+                "statements.err.toRequired",
+                "Please select an end date.",
+              );
               valid = false;
             }
 
@@ -832,6 +1417,7 @@
               if (new Date(from) > new Date(to)) {
                 setFieldError(
                   "fp-to",
+                  "statements.err.toAfterFrom",
                   "End date must be after the start date.",
                 );
                 valid = false;
@@ -839,12 +1425,17 @@
               if (new Date(from) < new Date("2017-01-01")) {
                 setFieldError(
                   "fp-from",
+                  "statements.err.fromMin",
                   "Statement history is available from January 2017 onwards.",
                 );
                 valid = false;
               }
               if (new Date(to) > new Date()) {
-                setFieldError("fp-to", "End date cannot be in the future.");
+                setFieldError(
+                  "fp-to",
+                  "statements.err.toFuture",
+                  "End date cannot be in the future.",
+                );
                 valid = false;
               }
             }
@@ -852,72 +1443,70 @@
             if (!email) {
               setFieldError(
                 "fp-email",
+                "statements.err.emailRequired",
                 "Please enter a delivery email address.",
               );
               valid = false;
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-              setFieldError("fp-email", "Please enter a valid email address.");
+              setFieldError(
+                "fp-email",
+                "statements.err.emailInvalid",
+                "Please enter a valid email address.",
+              );
               valid = false;
             }
 
             if (!valid) return;
 
-            const submitBtn = document.getElementById("fp-submit-btn");
+            var submitBtn = document.getElementById("fp-submit-btn");
             submitBtn.disabled = true;
             submitBtn.classList.add("fp-btn-loading");
 
-            requestStatement({ from, to, email })
-              .then(function (entry) {
+            requestStatement({ from: from, to: to, email: email })
+              .then(function () {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove("fp-btn-loading");
 
-                /* Show inline success */
-                const fromFmt = new Date(from).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                });
-                const toFmt = new Date(to).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                });
-                document.getElementById("fp-success-detail").textContent =
-                  "A statement from " +
-                  fromFmt +
-                  " to " +
-                  toFmt +
-                  " will be sent to " +
-                  email +
-                  " within 1-2 business days.";
+                // Save params so detail can re-translate on lang change
+                state.success.visible = true;
+                state.success.from = from;
+                state.success.to = to;
+                state.success.email = email;
+
+                // Show inline success
                 document
                   .getElementById("fp-submit-success")
                   .classList.remove("fp-hidden");
+                renderSuccess();
 
-                /* Scroll to top of page content */
                 document
                   .getElementById("fp-submit-success")
                   .scrollIntoView({ behavior: "smooth", block: "nearest" });
 
-                /* Reset form */
+                // Reset form
                 document.getElementById("fp-stmt-form").reset();
-                document.getElementById("fp-from").value = firstDay
-                  .toISOString()
-                  .slice(0, 10);
-                document.getElementById("fp-to").value = today
-                  .toISOString()
-                  .slice(0, 10);
-                getUser()
-                  .then(function (u) {
-                    document.getElementById("fp-email").value = u.email;
-                  })
-                  .catch(function () {});
+                setDefaultDates();
 
-                /* Reload history */
+                // Refill email again
+                if (state.userEmail)
+                  document.getElementById("fp-email").value = state.userEmail;
+                else {
+                  getUser()
+                    .then(function (u) {
+                      state.userEmail = u.email || "";
+                      if (state.userEmail)
+                        document.getElementById("fp-email").value =
+                          state.userEmail;
+                    })
+                    .catch(function () {});
+                }
+
+                // Reload history (translated)
                 loadHistory();
 
-                /* Auto-hide success after 8 seconds */
+                // Auto-hide success after 8 seconds
                 setTimeout(function () {
+                  state.success.visible = false;
                   document
                     .getElementById("fp-submit-success")
                     .classList.add("fp-hidden");
@@ -926,20 +1515,31 @@
               .catch(function (err) {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove("fp-btn-loading");
-                showFormError(
-                  err.message ||
+
+                // Keep API error if provided; otherwise translated generic
+                if (err && err.message) showFormError("", err.message);
+                else
+                  showFormError(
+                    "statements.err.generic",
+                    "",
                     "An unexpected error occurred. Please try again.",
-                );
+                  );
               });
           });
 
         /* ---- Clear errors on input change ---- */
         ["fp-from", "fp-to", "fp-email"].forEach(function (id) {
-          const el = document.getElementById(id);
+          var el = document.getElementById(id);
           if (el)
             el.addEventListener("change", function () {
-              setFieldError(id, "");
+              setFieldError(id, "", "");
             });
+        });
+
+        /* ---- Live update without reload ---- */
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+          loadHistory(); // refresh empty state/requested label in new language
         });
       })();
     </script>
