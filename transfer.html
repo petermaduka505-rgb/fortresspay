@@ -762,13 +762,570 @@
       (function () {
         if (!initPage("transfer")) return;
 
+        /* ================================================================ */
+        /*  I18N: page bundle                                                */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "transfer.backAria": "Back to dashboard",
+            "transfer.title": "Transfer Funds",
+            "transfer.subtitle": "Send money to another account",
+
+            "transfer.banner.title": "Transfers Unavailable",
+            "transfer.banner.text":
+              "Outgoing transfers can’t be initiated from your current geographical location. Account features for outgoing activity are restricted to domestic U.S. borders only. Incoming bank transfer credits will continue to be processed normally. If you believe this is an error, please contact our support team.",
+            "transfer.banner.cta": "Contact Support",
+
+            "transfer.tabs.bank": "Bank Transfer",
+            "transfer.tabs.internal": "Internal Transfer",
+            "transfer.tabs.wire": "Wire Transfer",
+
+            "transfer.form.title": "Transfer Details",
+            "transfer.form.sub": "All fields are required",
+
+            "transfer.fromAccount.label": "From Account",
+            "transfer.fromAccount.sourceLabel": "Source Account",
+            "transfer.fromAccount.loading": "Loading...",
+            "transfer.accountType.fixedDepositAccount": "Fixed Deposit Account",
+
+            "transfer.amount.label": "Amount",
+            "transfer.amount.ph": "0.00",
+            "transfer.amount.aria": "Transfer amount in USD",
+
+            "transfer.recipientName.label": "Recipient Full Name",
+            "transfer.recipientName.ph": "e.g. James Thornton",
+            "transfer.recipientName.aria": "Recipient full name",
+
+            "transfer.bank.label": "Recipient Bank",
+            "transfer.bank.ph": "e.g. Chase Bank",
+            "transfer.bank.aria": "Recipient bank name",
+
+            "transfer.accountNo.label": "Account Number",
+            "transfer.accountNo.ph": "Account No.",
+            "transfer.accountNo.aria": "Recipient account number",
+
+            "transfer.routingNo.label": "Routing Number",
+            "transfer.routingNo.ph": "Routing No.",
+            "transfer.routingNo.aria": "Recipient routing number",
+
+            "transfer.note.label": "Transfer Note",
+            "transfer.note.optional": "(optional)",
+            "transfer.note.ph": "Add a note for this transfer...",
+            "transfer.note.aria": "Transfer note",
+
+            "transfer.submit.restricted": "Transfer Restricted",
+
+            "transfer.info.days":
+              "Transfers are processed on business days only (Monday to Friday).",
+            "transfer.info.ssl":
+              "All transfers are protected by 256-bit SSL encryption.",
+            "transfer.info.arrival":
+              "Standard bank transfers typically arrive within 1-3 business days.",
+
+            "transfer.modal.closeAria": "Close",
+            "transfer.modal.title": "Outgoing Transfers Restricted",
+            "transfer.modal.subtitle":
+              "Outgoing transfers and payments are unavailable from your current geographical location. Outgoing account features are supported only within domestic U.S. borders.",
+            "transfer.modal.alertTitle":
+              "Restriction Active Since January 2025",
+            "transfer.modal.alertBody":
+              "Outgoing activity is restricted when access is detected outside supported domestic U.S. service regions. During this period, outgoing transactions cannot be initiated.",
+            "transfer.modal.cta": "Contact Support Team",
+            "transfer.modal.dismiss": "Close",
+          },
+
+          "zh-Hans": {
+            "transfer.backAria": "返回仪表板",
+            "transfer.title": "转账",
+            "transfer.subtitle": "向其他账户转账",
+
+            "transfer.banner.title": "转账不可用",
+            "transfer.banner.text":
+              "根据您当前的地理位置，无法发起转账。出账功能仅支持在美国境内使用。入账的银行转账仍将正常处理。如您认为存在误判，请联系支持团队。",
+            "transfer.banner.cta": "联系支持",
+
+            "transfer.tabs.bank": "银行转账",
+            "transfer.tabs.internal": "内部转账",
+            "transfer.tabs.wire": "电汇",
+
+            "transfer.form.title": "转账详情",
+            "transfer.form.sub": "所有字段均为必填",
+
+            "transfer.fromAccount.label": "转出账户",
+            "transfer.fromAccount.sourceLabel": "来源账户",
+            "transfer.fromAccount.loading": "加载中...",
+            "transfer.accountType.fixedDepositAccount": "定期存款账户",
+
+            "transfer.amount.label": "金额",
+            "transfer.amount.ph": "0.00",
+            "transfer.amount.aria": "以美元计的转账金额",
+
+            "transfer.recipientName.label": "收款人全名",
+            "transfer.recipientName.ph": "例如：James Thornton",
+            "transfer.recipientName.aria": "收款人全名",
+
+            "transfer.bank.label": "收款银行",
+            "transfer.bank.ph": "例如：Chase Bank",
+            "transfer.bank.aria": "收款银行名称",
+
+            "transfer.accountNo.label": "账户号码",
+            "transfer.accountNo.ph": "账户号码",
+            "transfer.accountNo.aria": "收款账户号码",
+
+            "transfer.routingNo.label": "路由号码",
+            "transfer.routingNo.ph": "路由号码",
+            "transfer.routingNo.aria": "收款路由号码",
+
+            "transfer.note.label": "转账备注",
+            "transfer.note.optional": "（可选）",
+            "transfer.note.ph": "为本次转账添加备注…",
+            "transfer.note.aria": "转账备注",
+
+            "transfer.submit.restricted": "转账受限",
+
+            "transfer.info.days": "转账仅在工作日处理（周一至周五）。",
+            "transfer.info.ssl": "所有转账均受256位SSL加密保护。",
+            "transfer.info.arrival": "标准银行转账通常在1-3个工作日内到账。",
+
+            "transfer.modal.closeAria": "关闭",
+            "transfer.modal.title": "出账转账受限",
+            "transfer.modal.subtitle":
+              "根据您当前的地理位置，无法发起转账和付款。出账功能仅支持在美国境内使用。",
+            "transfer.modal.alertTitle": "限制自 2025年1月 起生效",
+            "transfer.modal.alertBody":
+              "当检测到在支持的美国境内服务区域之外访问时，将限制出账活动。在此期间无法发起出账交易。",
+            "transfer.modal.cta": "联系支持团队",
+            "transfer.modal.dismiss": "关闭",
+          },
+
+          "zh-Hant": {
+            "transfer.backAria": "返回儀表板",
+            "transfer.title": "轉帳",
+            "transfer.subtitle": "向其他帳戶轉帳",
+
+            "transfer.banner.title": "轉帳不可用",
+            "transfer.banner.text":
+              "依據您目前的地理位置，無法發起轉帳。出帳功能僅支援在美國境內使用。入帳的銀行轉帳仍將正常處理。如您認為存在誤判，請聯絡支援團隊。",
+            "transfer.banner.cta": "聯絡支援",
+
+            "transfer.tabs.bank": "銀行轉帳",
+            "transfer.tabs.internal": "內部轉帳",
+            "transfer.tabs.wire": "電匯",
+
+            "transfer.form.title": "轉帳詳情",
+            "transfer.form.sub": "所有欄位皆為必填",
+
+            "transfer.fromAccount.label": "轉出帳戶",
+            "transfer.fromAccount.sourceLabel": "來源帳戶",
+            "transfer.fromAccount.loading": "載入中...",
+            "transfer.accountType.fixedDepositAccount": "定期存款帳戶",
+
+            "transfer.amount.label": "金額",
+            "transfer.amount.ph": "0.00",
+            "transfer.amount.aria": "以美元計的轉帳金額",
+
+            "transfer.recipientName.label": "收款人全名",
+            "transfer.recipientName.ph": "例如：James Thornton",
+            "transfer.recipientName.aria": "收款人全名",
+
+            "transfer.bank.label": "收款銀行",
+            "transfer.bank.ph": "例如：Chase Bank",
+            "transfer.bank.aria": "收款銀行名稱",
+
+            "transfer.accountNo.label": "帳戶號碼",
+            "transfer.accountNo.ph": "帳戶號碼",
+            "transfer.accountNo.aria": "收款帳戶號碼",
+
+            "transfer.routingNo.label": "路由號碼",
+            "transfer.routingNo.ph": "路由號碼",
+            "transfer.routingNo.aria": "收款路由號碼",
+
+            "transfer.note.label": "轉帳備註",
+            "transfer.note.optional": "（選填）",
+            "transfer.note.ph": "為本次轉帳新增備註…",
+            "transfer.note.aria": "轉帳備註",
+
+            "transfer.submit.restricted": "轉帳受限",
+
+            "transfer.info.days": "轉帳僅在工作日處理（週一至週五）。",
+            "transfer.info.ssl": "所有轉帳均受256位SSL加密保護。",
+            "transfer.info.arrival": "標準銀行轉帳通常在1-3個工作日內到帳。",
+
+            "transfer.modal.closeAria": "關閉",
+            "transfer.modal.title": "出帳轉帳受限",
+            "transfer.modal.subtitle":
+              "依據您目前的地理位置，無法發起轉帳與付款。出帳功能僅支援在美國境內使用。",
+            "transfer.modal.alertTitle": "限制自 2025年1月 起生效",
+            "transfer.modal.alertBody":
+              "當偵測到在支援的美國境內服務區域之外存取時，將限制出帳活動。在此期間無法發起出帳交易。",
+            "transfer.modal.cta": "聯絡支援團隊",
+            "transfer.modal.dismiss": "關閉",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State                                                            */
+        /* ================================================================ */
+        var state = { user: null };
+
+        /* ================================================================ */
+        /*  Helpers                                                          */
+        /* ================================================================ */
+        function setText(sel, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          el.textContent = t(key, fallback != null ? fallback : el.textContent);
+        }
+
+        function setAttr(sel, attr, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var fb = fallback != null ? fallback : el.getAttribute(attr) || "";
+          el.setAttribute(attr, t(key, fb));
+        }
+
+        function setLabelText(forId, key, fallback) {
+          var label = document.querySelector('label[for="' + forId + '"]');
+          if (!label) return;
+
+          // Keep required <span> intact
+          var nodes = Array.from(label.childNodes);
+          var textNode = nodes.find(function (n) {
+            return n.nodeType === Node.TEXT_NODE;
+          });
+
+          var translated = t(key, fallback || "").trim();
+          if (!textNode) {
+            textNode = document.createTextNode(translated + " ");
+            label.insertBefore(textNode, label.firstChild);
+          } else {
+            textNode.textContent = translated + " ";
+          }
+        }
+
+        function setInlineTextWithSvg(el, key, fallback) {
+          // For <a> or <button> that includes an SVG + text.
+          if (!el) return;
+          var tn = Array.from(el.childNodes).find(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          var txt = t(key, fallback || "").trim() + " ";
+          if (tn) tn.textContent = txt;
+          else el.appendChild(document.createTextNode(" " + txt));
+        }
+
+        function setTrailingTextAfterSvg(el, key, fallback) {
+          // For list items like: <div><svg/> TEXT...</div>
+          if (!el) return;
+          var tn = Array.from(el.childNodes).find(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          var txt = t(key, fallback || "");
+          if (tn) tn.textContent = " " + txt;
+          else el.appendChild(document.createTextNode(" " + txt));
+        }
+
+        function translateAccountType(v) {
+          var s = String(v || "").trim();
+          if (!s) return s;
+
+          // Map known values only; otherwise keep as-is.
+          if (s === "Fixed Deposit Account")
+            return t("transfer.accountType.fixedDepositAccount", s);
+          return s;
+        }
+
+        /* ================================================================ */
+        /*  Render                                                           */
+        /* ================================================================ */
+        function renderFromAccount() {
+          // Static labels inside "from account" card
+          setText(
+            ".fp-account-from-label",
+            "transfer.fromAccount.sourceLabel",
+            "Source Account",
+          );
+
+          var typeEl = document.getElementById("fp-from-account-type");
+          var numEl = document.getElementById("fp-from-account-number");
+
+          if (typeEl) {
+            if (state.user)
+              typeEl.textContent = translateAccountType(state.user.accountType);
+            else
+              typeEl.textContent = t(
+                "transfer.accountType.fixedDepositAccount",
+                typeEl.textContent,
+              );
+          }
+
+          if (numEl) {
+            if (state.user) numEl.textContent = state.user.accountNumber || "";
+            else
+              numEl.textContent = t(
+                "transfer.fromAccount.loading",
+                "Loading...",
+              );
+          }
+        }
+
+        function applyStaticText() {
+          // Header
+          setAttr(
+            ".fp-back-btn",
+            "aria-label",
+            "transfer.backAria",
+            "Back to dashboard",
+          );
+          setText(".fp-page-title", "transfer.title", "Transfer Funds");
+          setText(
+            ".fp-page-subtitle",
+            "transfer.subtitle",
+            "Send money to another account",
+          );
+
+          // Restriction banner
+          setText(
+            ".fp-restrict-banner-title",
+            "transfer.banner.title",
+            "Transfers Unavailable",
+          );
+          setText(".fp-restrict-banner-text", "transfer.banner.text");
+          setInlineTextWithSvg(
+            document.querySelector(".fp-restrict-banner-link"),
+            "transfer.banner.cta",
+            "Contact Support",
+          );
+
+          // Tabs
+          var tabs = document.querySelectorAll(".fp-tabs .fp-tab");
+          if (tabs[0])
+            tabs[0].textContent = t("transfer.tabs.bank", tabs[0].textContent);
+          if (tabs[1])
+            tabs[1].textContent = t(
+              "transfer.tabs.internal",
+              tabs[1].textContent,
+            );
+          if (tabs[2])
+            tabs[2].textContent = t("transfer.tabs.wire", tabs[2].textContent);
+
+          // Form card header
+          setText(
+            ".fp-form-card-title",
+            "transfer.form.title",
+            "Transfer Details",
+          );
+          setText(
+            ".fp-form-card-sub",
+            "transfer.form.sub",
+            "All fields are required",
+          );
+
+          // "From Account" label (no for=)
+          var fromGroup = document.getElementById("fp-from-account");
+          if (fromGroup) {
+            var lbl = fromGroup.closest(".fp-form-group")
+              ? fromGroup.closest(".fp-form-group").querySelector(".fp-label")
+              : null;
+            if (lbl)
+              lbl.textContent = t(
+                "transfer.fromAccount.label",
+                lbl.textContent,
+              );
+          }
+
+          // Amount + aria + placeholder
+          setLabelText("fp-amount", "transfer.amount.label", "Amount");
+          setAttr("#fp-amount", "placeholder", "transfer.amount.ph", "0.00");
+          setAttr(
+            "#fp-amount",
+            "aria-label",
+            "transfer.amount.aria",
+            "Transfer amount in USD",
+          );
+
+          // Recipient name
+          setLabelText(
+            "fp-recipient-name",
+            "transfer.recipientName.label",
+            "Recipient Full Name",
+          );
+          setAttr(
+            "#fp-recipient-name",
+            "placeholder",
+            "transfer.recipientName.ph",
+            "e.g. James Thornton",
+          );
+          setAttr(
+            "#fp-recipient-name",
+            "aria-label",
+            "transfer.recipientName.aria",
+            "Recipient full name",
+          );
+
+          // Recipient bank
+          setLabelText("fp-bank-name", "transfer.bank.label", "Recipient Bank");
+          setAttr(
+            "#fp-bank-name",
+            "placeholder",
+            "transfer.bank.ph",
+            "e.g. Chase Bank",
+          );
+          setAttr(
+            "#fp-bank-name",
+            "aria-label",
+            "transfer.bank.aria",
+            "Recipient bank name",
+          );
+
+          // Account / routing
+          setLabelText(
+            "fp-account-number",
+            "transfer.accountNo.label",
+            "Account Number",
+          );
+          setAttr(
+            "#fp-account-number",
+            "placeholder",
+            "transfer.accountNo.ph",
+            "Account No.",
+          );
+          setAttr(
+            "#fp-account-number",
+            "aria-label",
+            "transfer.accountNo.aria",
+            "Recipient account number",
+          );
+
+          setLabelText(
+            "fp-routing-number",
+            "transfer.routingNo.label",
+            "Routing Number",
+          );
+          setAttr(
+            "#fp-routing-number",
+            "placeholder",
+            "transfer.routingNo.ph",
+            "Routing No.",
+          );
+          setAttr(
+            "#fp-routing-number",
+            "aria-label",
+            "transfer.routingNo.aria",
+            "Recipient routing number",
+          );
+
+          // Note label with "(optional)" span
+          var noteLabel = document.querySelector(
+            'label[for="fp-transfer-note"]',
+          );
+          if (noteLabel) {
+            var nodes = Array.from(noteLabel.childNodes);
+            var textNode = nodes.find(function (n) {
+              return n.nodeType === Node.TEXT_NODE;
+            });
+            if (textNode)
+              textNode.textContent =
+                t("transfer.note.label", "Transfer Note") + " ";
+
+            var optSpan = noteLabel.querySelector("span");
+            if (optSpan)
+              optSpan.textContent = t("transfer.note.optional", "(optional)");
+          }
+          setAttr(
+            "#fp-transfer-note",
+            "placeholder",
+            "transfer.note.ph",
+            "Add a note for this transfer...",
+          );
+          setAttr(
+            "#fp-transfer-note",
+            "aria-label",
+            "transfer.note.aria",
+            "Transfer note",
+          );
+
+          // Submit button (SVG + text)
+          setInlineTextWithSvg(
+            document.getElementById("fp-transfer-submit"),
+            "transfer.submit.restricted",
+            "Transfer Restricted",
+          );
+
+          // Info items (SVG + text)
+          var info = document.querySelectorAll(".fp-transfer-info-item");
+          if (info[0]) setTrailingTextAfterSvg(info[0], "transfer.info.days");
+          if (info[1]) setTrailingTextAfterSvg(info[1], "transfer.info.ssl");
+          if (info[2])
+            setTrailingTextAfterSvg(info[2], "transfer.info.arrival");
+
+          // Modal
+          setAttr(
+            "#fp-restrict-modal-close",
+            "aria-label",
+            "transfer.modal.closeAria",
+            "Close",
+          );
+          setText(
+            "#fp-restrict-modal-title",
+            "transfer.modal.title",
+            "Outgoing Transfers Restricted",
+          );
+
+          var modalSub = document.querySelector(
+            "#fp-restrict-modal .fp-modal-subtitle",
+          );
+          if (modalSub)
+            modalSub.textContent = t(
+              "transfer.modal.subtitle",
+              modalSub.textContent,
+            );
+
+          setText(
+            "#fp-restrict-modal .fp-alert-title",
+            "transfer.modal.alertTitle",
+            "Restriction Active Since January 2025",
+          );
+          var alertBody = document.querySelector(
+            "#fp-restrict-modal .fp-alert p:not(.fp-alert-title)",
+          );
+          if (alertBody)
+            alertBody.textContent = t(
+              "transfer.modal.alertBody",
+              alertBody.textContent,
+            );
+
+          var modalCta = document.querySelector(
+            "#fp-restrict-modal a.fp-btn.fp-btn-primary",
+          );
+          if (modalCta)
+            modalCta.textContent = t(
+              "transfer.modal.cta",
+              modalCta.textContent,
+            );
+
+          setText(
+            "#fp-restrict-modal-dismiss",
+            "transfer.modal.dismiss",
+            "Close",
+          );
+
+          // Dynamic from-account
+          renderFromAccount();
+        }
+
+        function renderAll() {
+          applyStaticText();
+        }
+
+        // Initial paint
+        renderAll();
+
         /* ---- Populate from-account ---- */
         getUser()
           .then(function (u) {
-            document.getElementById("fp-from-account-type").textContent =
-              u.accountType;
-            document.getElementById("fp-from-account-number").textContent =
-              u.accountNumber;
+            state.user = u;
+            renderFromAccount();
           })
           .catch(function () {});
 
@@ -791,6 +1348,11 @@
             closeModal("fp-restrict-modal");
           });
         setupModalEsc("fp-restrict-modal");
+
+        // Live update without reload
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+        });
       })();
     </script>
   </body>
