@@ -843,18 +843,612 @@
       (function () {
         if (!initPage("pay")) return;
 
+        /* ================================================================ */
+        /*  I18N: page bundle (extend without editing common.js)             */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "pay.backAria": "Back to dashboard",
+            "pay.title": "Make a Payment",
+            "pay.subtitle": "Pay bills, merchants, or individuals",
+
+            "pay.banner.title": "Payments Unavailable",
+            "pay.banner.text":
+              "Outgoing payments can’t be initiated from your current geographical location. Outgoing account features are available only within domestic U.S. borders. Incoming bank transfer credits are processed normally. Please contact our support team if you need assistance.",
+            "pay.banner.cta": "Contact Support",
+
+            "pay.tabs.anyone": "Pay Anyone",
+            "pay.tabs.bill": "Bill Pay",
+            "pay.tabs.card": "Card Payment",
+
+            "pay.recipients.title": "Recent Recipients",
+            "pay.recipients.addNew": "Add New",
+
+            "pay.form.title": "Payment Details",
+            "pay.form.sub": "All fields are required",
+
+            "pay.payee.label": "Payee Name",
+            "pay.payee.ph": "Enter payee name or business",
+            "pay.payee.aria": "Payee name",
+
+            "pay.amount.label": "Amount",
+            "pay.amount.ph": "0.00",
+            "pay.amount.aria": "Payment amount in USD",
+
+            "pay.category.label": "Payment Category",
+            "pay.category.aria": "Payment category",
+            "pay.category.select": "Select a category",
+            "pay.category.rent": "Rent / Mortgage",
+            "pay.category.utilities": "Utilities",
+            "pay.category.insurance": "Insurance",
+            "pay.category.medical": "Medical",
+            "pay.category.education": "Education",
+            "pay.category.subscription": "Subscription",
+            "pay.category.other": "Other",
+
+            "pay.date.label": "Payment Date",
+            "pay.date.aria": "Payment date",
+
+            "pay.debitFrom.label": "Debit From",
+            "pay.debitFrom.cardAria": "Account card",
+            "pay.card.holder": "Account Holder",
+            "pay.card.type": "Account Type",
+            "pay.card.typeVal": "Fixed Deposit",
+            "pay.card.loading": "Loading...",
+
+            "pay.note.label": "Reference",
+            "pay.note.optional": "(optional)",
+            "pay.note.ph": "e.g. Invoice #1024, Rent August",
+            "pay.note.aria": "Payment reference",
+
+            "pay.submit.restricted": "Payments Restricted",
+
+            "pay.info.cutoff":
+              "Payments submitted before 3:00 PM ET are processed the same business day.",
+            "pay.info.encrypt":
+              "All payments are encrypted end-to-end and monitored for fraud.",
+            "pay.info.reversal":
+              "Payment reversals may be requested within 24 hours of processing.",
+
+            "pay.modal.closeAria": "Close",
+            "pay.modal.title": "Outgoing Payments Restricted",
+            "pay.modal.subtitle":
+              "Outgoing payments are unavailable from your current geographical location. Outgoing account features are supported only within domestic U.S. borders.",
+            "pay.modal.alertTitle": "Restriction Active Since January 2025",
+            "pay.modal.alertBody":
+              "Outgoing activity is restricted when access is detected outside supported domestic U.S. service regions. Outgoing payments are unavailable until you sign in and retry from within the United States. Please contact support if you believe this is incorrect.",
+            "pay.modal.cta": "Contact Support Team",
+            "pay.modal.dismiss": "Close",
+          },
+
+          "zh-Hans": {
+            "pay.backAria": "返回仪表板",
+            "pay.title": "发起付款",
+            "pay.subtitle": "向账单、商户或个人付款",
+
+            "pay.banner.title": "付款功能不可用",
+            "pay.banner.text":
+              "根据您当前的地理位置，无法发起付款。仅支持在美国境内使用出账功能。入账的银行转账仍将正常处理。如需协助，请联系支持团队。",
+            "pay.banner.cta": "联系支持",
+
+            "pay.tabs.anyone": "向个人付款",
+            "pay.tabs.bill": "账单支付",
+            "pay.tabs.card": "卡片付款",
+
+            "pay.recipients.title": "最近收款人",
+            "pay.recipients.addNew": "添加",
+
+            "pay.form.title": "付款详情",
+            "pay.form.sub": "所有字段均为必填",
+
+            "pay.payee.label": "收款人姓名",
+            "pay.payee.ph": "输入收款人姓名或商户名称",
+            "pay.payee.aria": "收款人姓名",
+
+            "pay.amount.label": "金额",
+            "pay.amount.ph": "0.00",
+            "pay.amount.aria": "以美元计的付款金额",
+
+            "pay.category.label": "付款类别",
+            "pay.category.aria": "付款类别",
+            "pay.category.select": "选择类别",
+            "pay.category.rent": "房租 / 房贷",
+            "pay.category.utilities": "水电煤",
+            "pay.category.insurance": "保险",
+            "pay.category.medical": "医疗",
+            "pay.category.education": "教育",
+            "pay.category.subscription": "订阅",
+            "pay.category.other": "其他",
+
+            "pay.date.label": "付款日期",
+            "pay.date.aria": "付款日期",
+
+            "pay.debitFrom.label": "扣款账户",
+            "pay.debitFrom.cardAria": "账户卡片",
+            "pay.card.holder": "账户持有人",
+            "pay.card.type": "账户类型",
+            "pay.card.typeVal": "定期存款",
+            "pay.card.loading": "加载中...",
+
+            "pay.note.label": "参考",
+            "pay.note.optional": "（可选）",
+            "pay.note.ph": "例如：发票#1024，8月房租",
+            "pay.note.aria": "付款备注",
+
+            "pay.submit.restricted": "付款受限",
+
+            "pay.info.cutoff":
+              "美东时间下午3:00前提交的付款将于同一工作日处理。",
+            "pay.info.encrypt": "所有付款均为端到端加密，并进行欺诈监测。",
+            "pay.info.reversal": "付款处理后24小时内可申请撤销。",
+
+            "pay.modal.closeAria": "关闭",
+            "pay.modal.title": "出账付款受限",
+            "pay.modal.subtitle":
+              "根据您当前的地理位置，无法发起付款。仅支持在美国境内使用出账功能。",
+            "pay.modal.alertTitle": "限制自 2025年1月 起生效",
+            "pay.modal.alertBody":
+              "当检测到在支持的美国境内服务区域之外访问时，将限制出账活动。出账付款在您从美国境内登录并重试之前不可用。如您认为判断有误，请联系支持团队。",
+            "pay.modal.cta": "联系支持团队",
+            "pay.modal.dismiss": "关闭",
+          },
+
+          "zh-Hant": {
+            "pay.backAria": "返回儀表板",
+            "pay.title": "發起付款",
+            "pay.subtitle": "向帳單、商戶或個人付款",
+
+            "pay.banner.title": "付款功能不可用",
+            "pay.banner.text":
+              "依據您目前的地理位置，無法發起付款。僅支援在美國境內使用出帳功能。入帳的銀行轉帳仍將正常處理。如需協助，請聯絡支援團隊。",
+            "pay.banner.cta": "聯絡支援",
+
+            "pay.tabs.anyone": "向個人付款",
+            "pay.tabs.bill": "帳單支付",
+            "pay.tabs.card": "卡片付款",
+
+            "pay.recipients.title": "最近收款人",
+            "pay.recipients.addNew": "新增",
+
+            "pay.form.title": "付款詳情",
+            "pay.form.sub": "所有欄位皆為必填",
+
+            "pay.payee.label": "收款人姓名",
+            "pay.payee.ph": "輸入收款人姓名或商戶名稱",
+            "pay.payee.aria": "收款人姓名",
+
+            "pay.amount.label": "金額",
+            "pay.amount.ph": "0.00",
+            "pay.amount.aria": "以美元計的付款金額",
+
+            "pay.category.label": "付款類別",
+            "pay.category.aria": "付款類別",
+            "pay.category.select": "選擇類別",
+            "pay.category.rent": "房租 / 房貸",
+            "pay.category.utilities": "水電瓦斯",
+            "pay.category.insurance": "保險",
+            "pay.category.medical": "醫療",
+            "pay.category.education": "教育",
+            "pay.category.subscription": "訂閱",
+            "pay.category.other": "其他",
+
+            "pay.date.label": "付款日期",
+            "pay.date.aria": "付款日期",
+
+            "pay.debitFrom.label": "扣款帳戶",
+            "pay.debitFrom.cardAria": "帳戶卡片",
+            "pay.card.holder": "帳戶持有人",
+            "pay.card.type": "帳戶類型",
+            "pay.card.typeVal": "定期存款",
+            "pay.card.loading": "載入中...",
+
+            "pay.note.label": "參考",
+            "pay.note.optional": "（選填）",
+            "pay.note.ph": "例如：發票#1024，8月房租",
+            "pay.note.aria": "付款備註",
+
+            "pay.submit.restricted": "付款受限",
+
+            "pay.info.cutoff":
+              "美東時間下午3:00前提交的付款將於同一工作日處理。",
+            "pay.info.encrypt": "所有付款皆為端到端加密，並進行詐騙監測。",
+            "pay.info.reversal": "付款處理後24小時內可申請撤銷。",
+
+            "pay.modal.closeAria": "關閉",
+            "pay.modal.title": "出帳付款受限",
+            "pay.modal.subtitle":
+              "依據您目前的地理位置，無法發起付款。僅支援在美國境內使用出帳功能。",
+            "pay.modal.alertTitle": "限制自 2025年1月 起生效",
+            "pay.modal.alertBody":
+              "當偵測到在支援的美國境內服務區域之外存取時，將限制出帳活動。出帳付款在您於美國境內登入並重試之前不可用。若您認為判斷有誤，請聯絡支援團隊。",
+            "pay.modal.cta": "聯絡支援團隊",
+            "pay.modal.dismiss": "關閉",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State                                                            */
+        /* ================================================================ */
+        var state = { user: null };
+
+        /* ================================================================ */
+        /*  Helpers                                                          */
+        /* ================================================================ */
+        function setText(sel, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          el.textContent = t(key, fallback != null ? fallback : el.textContent);
+        }
+
+        function setAttr(sel, attr, key, fallback) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var fb = fallback != null ? fallback : el.getAttribute(attr) || "";
+          el.setAttribute(attr, t(key, fb));
+        }
+
+        function setLabelText(forId, key, fallback) {
+          var label = document.querySelector('label[for="' + forId + '"]');
+          if (!label) return;
+
+          // keep required <span> intact
+          var nodes = Array.from(label.childNodes);
+          var textNode = nodes.find(function (n) {
+            return n.nodeType === Node.TEXT_NODE;
+          });
+
+          var translated = t(key, fallback || "").trim();
+          if (!textNode) {
+            textNode = document.createTextNode(translated + " ");
+            label.insertBefore(textNode, label.firstChild);
+          } else {
+            textNode.textContent = translated + " ";
+          }
+        }
+
+        function setButtonIconText(btn, key, fallback) {
+          if (!btn) return;
+          // Find first non-empty text node inside button and replace it
+          var textNodes = Array.from(btn.childNodes).filter(function (n) {
+            return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+          });
+          if (textNodes[0]) {
+            textNodes[0].textContent = " " + t(key, fallback || "").trim();
+          } else {
+            btn.appendChild(
+              document.createTextNode(" " + t(key, fallback || "").trim()),
+            );
+          }
+        }
+
+        /* ================================================================ */
+        /*  Render                                                           */
+        /* ================================================================ */
+        function renderCardVisual() {
+          // Labels inside the visual card
+          var labels = document.querySelectorAll(".fp-card-visual-label");
+          if (labels[0])
+            labels[0].textContent = t("pay.card.holder", labels[0].textContent);
+          if (labels[1])
+            labels[1].textContent = t("pay.card.type", labels[1].textContent);
+
+          // Account type value (right side)
+          var typeVal = document.querySelector(
+            ".fp-card-visual-meta > div:nth-child(2) .fp-card-visual-value",
+          );
+          if (typeVal)
+            typeVal.textContent = t("pay.card.typeVal", typeVal.textContent);
+
+          // Loading / holder name
+          var holder = document.getElementById("fp-card-holder");
+          if (!holder) return;
+
+          if (state.user) {
+            holder.textContent =
+              (state.user.firstName || "") + " " + (state.user.lastName || "");
+          } else {
+            holder.textContent = t("pay.card.loading", "Loading...");
+          }
+        }
+
+        function applyStaticText() {
+          // Header
+          setAttr(
+            ".fp-back-btn",
+            "aria-label",
+            "pay.backAria",
+            "Back to dashboard",
+          );
+          setText(".fp-page-title", "pay.title", "Make a Payment");
+          setText(
+            ".fp-page-subtitle",
+            "pay.subtitle",
+            "Pay bills, merchants, or individuals",
+          );
+
+          // Restriction banner
+          setText(
+            ".fp-restrict-banner-title",
+            "pay.banner.title",
+            "Payments Unavailable",
+          );
+          setText(".fp-restrict-banner-text", "pay.banner.text");
+          setText(
+            ".fp-restrict-banner-link",
+            "pay.banner.cta",
+            "Contact Support",
+          ); // sets only textContent; SVG remains via HTML? (see below)
+
+          // Fix banner link text without removing the SVG
+          var bannerLink = document.querySelector(".fp-restrict-banner-link");
+          if (bannerLink) {
+            // replace first text node in link
+            var tn = Array.from(bannerLink.childNodes).find(function (n) {
+              return n.nodeType === Node.TEXT_NODE && n.textContent.trim();
+            });
+            if (tn)
+              tn.textContent = t("pay.banner.cta", "Contact Support") + " ";
+          }
+
+          // Tabs (3)
+          var tabs = document.querySelectorAll(".fp-tabs .fp-tab");
+          if (tabs[0])
+            tabs[0].textContent = t("pay.tabs.anyone", tabs[0].textContent);
+          if (tabs[1])
+            tabs[1].textContent = t("pay.tabs.bill", tabs[1].textContent);
+          if (tabs[2])
+            tabs[2].textContent = t("pay.tabs.card", tabs[2].textContent);
+
+          // Recent recipients heading
+          var quickWrap = document.querySelector(".fp-quick-recipients");
+          if (quickWrap) {
+            var heading = quickWrap.parentElement
+              ? quickWrap.parentElement.querySelector("p")
+              : null;
+            if (heading)
+              heading.textContent = t(
+                "pay.recipients.title",
+                heading.textContent,
+              );
+          }
+
+          // "Add New" chip (last chip)
+          var chips = document.querySelectorAll(".fp-recipient-chip-name");
+          if (chips && chips.length) {
+            var last = chips[chips.length - 1];
+            if (last)
+              last.textContent = t("pay.recipients.addNew", last.textContent);
+          }
+
+          // Form card header
+          setText(".fp-form-card-title", "pay.form.title", "Payment Details");
+          setText(
+            ".fp-form-card-sub",
+            "pay.form.sub",
+            "All fields are required",
+          );
+
+          // Labels + placeholders + aria
+          setLabelText("fp-payee-name", "pay.payee.label", "Payee Name");
+          setAttr(
+            "#fp-payee-name",
+            "placeholder",
+            "pay.payee.ph",
+            "Enter payee name or business",
+          );
+          setAttr(
+            "#fp-payee-name",
+            "aria-label",
+            "pay.payee.aria",
+            "Payee name",
+          );
+
+          setLabelText("fp-pay-amount", "pay.amount.label", "Amount");
+          setAttr("#fp-pay-amount", "placeholder", "pay.amount.ph", "0.00");
+          setAttr(
+            "#fp-pay-amount",
+            "aria-label",
+            "pay.amount.aria",
+            "Payment amount in USD",
+          );
+
+          setLabelText(
+            "fp-pay-category",
+            "pay.category.label",
+            "Payment Category",
+          );
+          setAttr(
+            "#fp-pay-category",
+            "aria-label",
+            "pay.category.aria",
+            "Payment category",
+          );
+
+          // Category options
+          var sel = document.getElementById("fp-pay-category");
+          if (sel && sel.options && sel.options.length >= 8) {
+            sel.options[0].textContent = t(
+              "pay.category.select",
+              sel.options[0].textContent,
+            );
+            sel.options[1].textContent = t(
+              "pay.category.rent",
+              sel.options[1].textContent,
+            );
+            sel.options[2].textContent = t(
+              "pay.category.utilities",
+              sel.options[2].textContent,
+            );
+            sel.options[3].textContent = t(
+              "pay.category.insurance",
+              sel.options[3].textContent,
+            );
+            sel.options[4].textContent = t(
+              "pay.category.medical",
+              sel.options[4].textContent,
+            );
+            sel.options[5].textContent = t(
+              "pay.category.education",
+              sel.options[5].textContent,
+            );
+            sel.options[6].textContent = t(
+              "pay.category.subscription",
+              sel.options[6].textContent,
+            );
+            sel.options[7].textContent = t(
+              "pay.category.other",
+              sel.options[7].textContent,
+            );
+          }
+
+          setLabelText("fp-pay-date", "pay.date.label", "Payment Date");
+          setAttr(
+            "#fp-pay-date",
+            "aria-label",
+            "pay.date.aria",
+            "Payment date",
+          );
+
+          // "Debit From" (label without for=)
+          var debitLabel = Array.from(
+            document.querySelectorAll(".fp-form-group .fp-label"),
+          ).find(function (x) {
+            return (
+              !x.getAttribute("for") && x.textContent.trim() === "Debit From"
+            );
+          });
+          if (debitLabel)
+            debitLabel.textContent = t(
+              "pay.debitFrom.label",
+              debitLabel.textContent,
+            );
+
+          setAttr(
+            ".fp-card-visual",
+            "aria-label",
+            "pay.debitFrom.cardAria",
+            "Account card",
+          );
+
+          // Reference label with "(optional)" span
+          var refLabel = document.querySelector('label[for="fp-pay-note"]');
+          if (refLabel) {
+            // first text node = "Reference"
+            var nodes = Array.from(refLabel.childNodes);
+            var textNode = nodes.find(function (n) {
+              return n.nodeType === Node.TEXT_NODE;
+            });
+            if (textNode)
+              textNode.textContent = t("pay.note.label", "Reference") + " ";
+
+            var optSpan = refLabel.querySelector("span");
+            if (optSpan)
+              optSpan.textContent = t("pay.note.optional", "(optional)");
+          }
+          setAttr(
+            "#fp-pay-note",
+            "placeholder",
+            "pay.note.ph",
+            "e.g. Invoice #1024, Rent August",
+          );
+          setAttr(
+            "#fp-pay-note",
+            "aria-label",
+            "pay.note.aria",
+            "Payment reference",
+          );
+
+          // Submit restricted button (has SVG + text)
+          setButtonIconText(
+            document.getElementById("fp-pay-submit"),
+            "pay.submit.restricted",
+            "Payments Restricted",
+          );
+
+          // Info bullets
+          var info = document.querySelectorAll(".fp-pay-info-item");
+          if (info[0]) info[0].childNodes.forEach(function () {}); // noop; keep svg
+          if (info[0])
+            info[0].lastChild.textContent = " " + t("pay.info.cutoff");
+          if (info[1])
+            info[1].lastChild.textContent = " " + t("pay.info.encrypt");
+          if (info[2])
+            info[2].lastChild.textContent = " " + t("pay.info.reversal");
+
+          // Restriction modal
+          setAttr(
+            "#fp-restrict-modal-close",
+            "aria-label",
+            "pay.modal.closeAria",
+            "Close",
+          );
+          setText(
+            "#fp-restrict-modal-title",
+            "pay.modal.title",
+            "Outgoing Payments Restricted",
+          );
+
+          // Modal subtitle (specific to this modal)
+          var modalSub = document.querySelector(
+            "#fp-restrict-modal .fp-modal-subtitle",
+          );
+          if (modalSub)
+            modalSub.textContent = t(
+              "pay.modal.subtitle",
+              modalSub.textContent,
+            );
+
+          // Alert title + body inside modal
+          setText(
+            "#fp-restrict-modal .fp-alert-title",
+            "pay.modal.alertTitle",
+            "Restriction Active Since January 2025",
+          );
+          var alertP = document.querySelector(
+            "#fp-restrict-modal .fp-alert p:not(.fp-alert-title)",
+          );
+          if (alertP)
+            alertP.textContent = t("pay.modal.alertBody", alertP.textContent);
+
+          // Modal buttons
+          var modalCta = document.querySelector(
+            "#fp-restrict-modal a.fp-btn.fp-btn-primary",
+          );
+          if (modalCta)
+            modalCta.textContent = t("pay.modal.cta", modalCta.textContent);
+
+          setText("#fp-restrict-modal-dismiss", "pay.modal.dismiss", "Close");
+
+          // Card visual (labels + loading/name)
+          renderCardVisual();
+        }
+
+        function renderAll() {
+          applyStaticText();
+        }
+
         /* ---- Set today's date as default ---- */
-        const today = new Date().toISOString().slice(0, 10);
-        document.getElementById("fp-pay-date").value = today;
+        var today = new Date().toISOString().slice(0, 10);
+        var dateEl = document.getElementById("fp-pay-date");
+        if (dateEl) dateEl.value = today;
+
+        // Initial paint
+        renderAll();
 
         /* ---- Populate card visual ---- */
         getUser()
           .then(function (u) {
-            document.getElementById("fp-card-holder").textContent =
-              u.firstName + " " + u.lastName;
-            const num = u.accountNumber.replace(/\s/g, "").slice(-4);
-            document.getElementById("fp-card-number").textContent =
-              "**** **** **** " + num;
+            state.user = u;
+
+            // Number
+            var num = String(u.accountNumber || "")
+              .replace(/\s/g, "")
+              .slice(-4);
+            var nEl = document.getElementById("fp-card-number");
+            if (nEl) nEl.textContent = "**** **** **** " + num;
+
+            // Name (re-render so it also restores labels if language changed mid-load)
+            renderCardVisual();
           })
           .catch(function () {});
 
@@ -877,6 +1471,11 @@
             closeModal("fp-restrict-modal");
           });
         setupModalEsc("fp-restrict-modal");
+
+        // Live update without reload (mirror dashboard/activity)
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+        });
       })();
     </script>
   </body>
