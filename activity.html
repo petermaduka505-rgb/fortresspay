@@ -467,54 +467,374 @@
       (function () {
         if (!initPage("activity")) return;
 
-        const INITIAL_LOAD = 12;
+        /* ================================================================ */
+        /*  I18N: page bundle (extend common.js translations)                */
+        /* ================================================================ */
+        fpI18nExtend({
+          en: {
+            "activity.backAria": "Back to dashboard",
+            "activity.title": "Transaction History",
+            "activity.subtitle": "All incoming credits to your account",
+
+            "activity.summary.totalCredits": "Total Credits",
+            "activity.summary.transactions": "Transactions",
+            "activity.summary.accountType": "Account Type",
+            "activity.accountType.fixedDeposit": "Fixed Deposit",
+
+            "activity.filters.all": "All",
+            "activity.filters.credits": "Credits",
+
+            "activity.loadMoreTxns": "Load more transactions",
+            "activity.loadMore": "Load more",
+            "activity.remaining": "remaining",
+            "activity.loading": "Loading...",
+
+            "activity.timelineLink":
+              "Looking for a specific timeline? Click here",
+
+            "activity.modal.closeAria": "Close",
+            "activity.modal.title": "Request Account Statement",
+            "activity.modal.subtitle":
+              "We will send a detailed statement to your registered email address.",
+            "activity.modal.fromDate": "From Date",
+            "activity.modal.toDate": "To Date",
+            "activity.modal.deliveryEmail": "Delivery Email",
+            "activity.modal.submit": "Submit Request",
+
+            "activity.success.title": "Request Submitted",
+            "activity.success.text":
+              "Your statement request has been received. A detailed PDF statement will be sent to your email address within 1-2 business days.",
+            "activity.success.close": "Close",
+
+            "activity.errors.fromRequired": "Please select a start date.",
+            "activity.errors.toRequired": "Please select an end date.",
+            "activity.errors.toAfterFrom": "End date must be after start date.",
+            "activity.errors.emailRequired": "Please enter an email address.",
+            "activity.errors.emailInvalid":
+              "Please enter a valid email address.",
+            "activity.errors.generic": "An error occurred. Please try again.",
+          },
+
+          "zh-Hans": {
+            "activity.backAria": "返回仪表板",
+            "activity.title": "交易记录",
+            "activity.subtitle": "所有入账到您账户的款项",
+
+            "activity.summary.totalCredits": "入账总额",
+            "activity.summary.transactions": "交易笔数",
+            "activity.summary.accountType": "账户类型",
+            "activity.accountType.fixedDeposit": "定期存款",
+
+            "activity.filters.all": "全部",
+            "activity.filters.credits": "入账",
+
+            "activity.loadMoreTxns": "加载更多交易",
+            "activity.loadMore": "加载更多",
+            "activity.remaining": "剩余",
+            "activity.loading": "正在加载...",
+
+            "activity.timelineLink": "需要指定时间范围？点击这里",
+
+            "activity.modal.closeAria": "关闭",
+            "activity.modal.title": "申请账户对账单",
+            "activity.modal.subtitle":
+              "我们会将详细对账单发送至您登记的邮箱地址。",
+            "activity.modal.fromDate": "起始日期",
+            "activity.modal.toDate": "结束日期",
+            "activity.modal.deliveryEmail": "接收邮箱",
+            "activity.modal.submit": "提交申请",
+
+            "activity.success.title": "申请已提交",
+            "activity.success.text":
+              "我们已收到您的对账单申请。详细PDF对账单将在1-2个工作日内发送至您的邮箱地址。",
+            "activity.success.close": "关闭",
+
+            "activity.errors.fromRequired": "请选择起始日期。",
+            "activity.errors.toRequired": "请选择结束日期。",
+            "activity.errors.toAfterFrom": "结束日期必须晚于起始日期。",
+            "activity.errors.emailRequired": "请输入邮箱地址。",
+            "activity.errors.emailInvalid": "请输入有效的邮箱地址。",
+            "activity.errors.generic": "发生错误，请重试。",
+          },
+
+          "zh-Hant": {
+            "activity.backAria": "返回儀表板",
+            "activity.title": "交易記錄",
+            "activity.subtitle": "所有入帳到您帳戶的款項",
+
+            "activity.summary.totalCredits": "入帳總額",
+            "activity.summary.transactions": "交易筆數",
+            "activity.summary.accountType": "帳戶類型",
+            "activity.accountType.fixedDeposit": "定期存款",
+
+            "activity.filters.all": "全部",
+            "activity.filters.credits": "入帳",
+
+            "activity.loadMoreTxns": "載入更多交易",
+            "activity.loadMore": "載入更多",
+            "activity.remaining": "剩餘",
+            "activity.loading": "載入中...",
+
+            "activity.timelineLink": "需要指定時間範圍？點擊這裡",
+
+            "activity.modal.closeAria": "關閉",
+            "activity.modal.title": "申請帳戶對帳單",
+            "activity.modal.subtitle":
+              "我們會將詳細對帳單寄送至您登記的電子郵件地址。",
+            "activity.modal.fromDate": "起始日期",
+            "activity.modal.toDate": "結束日期",
+            "activity.modal.deliveryEmail": "收件電子郵件",
+            "activity.modal.submit": "提交申請",
+
+            "activity.success.title": "申請已提交",
+            "activity.success.text":
+              "我們已收到您的對帳單申請。詳細 PDF 對帳單將於 1–2 個工作日內寄送至您的電子郵件地址。",
+            "activity.success.close": "關閉",
+
+            "activity.errors.fromRequired": "請選擇起始日期。",
+            "activity.errors.toRequired": "請選擇結束日期。",
+            "activity.errors.toAfterFrom": "結束日期必須晚於起始日期。",
+            "activity.errors.emailRequired": "請輸入電子郵件地址。",
+            "activity.errors.emailInvalid": "請輸入有效的電子郵件地址。",
+            "activity.errors.generic": "發生錯誤，請重試。",
+          },
+        });
+
+        /* ================================================================ */
+        /*  State + constants                                                */
+        /* ================================================================ */
         const PER_PAGE = 12;
         const TOTAL_TXNS = 96;
 
-        let offset = 0;
-        let allLoaded = false;
-        let isLoading = false;
-        let renderedItems = [];
+        const state = {
+          balance: null,
 
-        /* ---- Populate summary ---- */
-        getBalance()
-          .then(function (balance) {
-            const fmt = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(balance);
-            document.getElementById("fp-activity-summary").innerHTML = `
+          offset: 0,
+          allLoaded: false,
+          isLoading: false,
+          renderedItems: [],
+
+          // Statement modal errors (store keys so we can re-translate live)
+          stmtFieldErrorKey: {
+            "fp-stmt-from": "",
+            "fp-stmt-to": "",
+            "fp-stmt-email": "",
+          },
+          stmtFormErrorText: "", // raw text (may come from API)
+          stmtFormErrorKey: "", // fallback key for generic
+        };
+
+        /* ================================================================ */
+        /*  Tiny DOM helpers                                                 */
+        /* ================================================================ */
+        function setText(sel, key, fallback) {
+          const el = document.querySelector(sel);
+          if (!el) return;
+          el.textContent = t(key, fallback != null ? fallback : el.textContent);
+        }
+
+        function setAttr(sel, attr, key, fallback) {
+          const el = document.querySelector(sel);
+          if (!el) return;
+          const fb = fallback != null ? fallback : el.getAttribute(attr) || "";
+          el.setAttribute(attr, t(key, fb));
+        }
+
+        function setLabelText(forId, key, fallback) {
+          const label = document.querySelector('label[for="' + forId + '"]');
+          if (!label) return;
+
+          // Find the first text node so the required <span> remains untouched
+          const nodes = Array.from(label.childNodes);
+          let textNode = nodes.find((n) => n.nodeType === Node.TEXT_NODE);
+
+          const translated = t(key, fallback || "");
+          if (!textNode) {
+            textNode = document.createTextNode(translated + " ");
+            label.insertBefore(textNode, label.firstChild);
+          } else {
+            textNode.textContent = translated + " ";
+          }
+        }
+
+        /* ================================================================ */
+        /*  Render: static text                                              */
+        /* ================================================================ */
+        function applyStaticText() {
+          // Page header
+          setAttr(
+            ".fp-back-btn",
+            "aria-label",
+            "activity.backAria",
+            "Back to dashboard",
+          );
+          setText(".fp-page-title", "activity.title", "Transaction History");
+          setText(
+            ".fp-page-subtitle",
+            "activity.subtitle",
+            "All incoming credits to your account",
+          );
+
+          // Filters (by position)
+          const chips = document.querySelectorAll(
+            ".fp-activity-filters .fp-filter-chip",
+          );
+          if (chips[0])
+            chips[0].textContent = t(
+              "activity.filters.all",
+              chips[0].textContent,
+            );
+          if (chips[1])
+            chips[1].textContent = t(
+              "activity.filters.credits",
+              chips[1].textContent,
+            );
+
+          // Timeline link
+          setText(
+            "#fp-timeline-link",
+            "activity.timelineLink",
+            "Looking for a specific timeline? Click here",
+          );
+
+          // Modal static text
+          setAttr(
+            "#fp-stmt-modal-close",
+            "aria-label",
+            "activity.modal.closeAria",
+            "Close",
+          );
+          setText(
+            "#fp-stmt-modal-title",
+            "activity.modal.title",
+            "Request Account Statement",
+          );
+          setText(".fp-modal-subtitle", "activity.modal.subtitle");
+
+          setLabelText("fp-stmt-from", "activity.modal.fromDate", "From Date");
+          setLabelText("fp-stmt-to", "activity.modal.toDate", "To Date");
+          setLabelText(
+            "fp-stmt-email",
+            "activity.modal.deliveryEmail",
+            "Delivery Email",
+          );
+
+          setText("#fp-stmt-submit", "activity.modal.submit", "Submit Request");
+
+          setText(
+            ".fp-stmt-success-title",
+            "activity.success.title",
+            "Request Submitted",
+          );
+          setText(".fp-stmt-success-text", "activity.success.text");
+          setText("#fp-stmt-done-btn", "activity.success.close", "Close");
+        }
+
+        /* ================================================================ */
+        /*  Render: summary (dynamic HTML)                                   */
+        /* ================================================================ */
+        function renderSummary() {
+          const el = document.getElementById("fp-activity-summary");
+          if (!el) return;
+
+          const accountTypeText = t(
+            "activity.accountType.fixedDeposit",
+            "Fixed Deposit",
+          );
+
+          if (state.balance == null) {
+            // translated skeleton
+            el.innerHTML = `
           <div class="fp-summary-chip">
-            <div class="fp-summary-chip-label">Total Credits</div>
-            <div class="fp-summary-chip-value green">${fmt}</div>
+            <div class="fp-summary-chip-label">${t("activity.summary.totalCredits", "Total Credits")}</div>
+            <div class="fp-summary-chip-value green fp-skeleton" style="height: 20px; width: 100px; border-radius: 4px">&nbsp;</div>
           </div>
           <div class="fp-summary-chip">
-            <div class="fp-summary-chip-label">Transactions</div>
-            <div class="fp-summary-chip-value">${TOTAL_TXNS}</div>
+            <div class="fp-summary-chip-label">${t("activity.summary.transactions", "Transactions")}</div>
+            <div class="fp-summary-chip-value fp-skeleton" style="height: 20px; width: 40px; border-radius: 4px">&nbsp;</div>
           </div>
           <div class="fp-summary-chip">
-            <div class="fp-summary-chip-label">Account Type</div>
-            <div class="fp-summary-chip-value" style="font-size:0.85rem;">Fixed Deposit</div>
+            <div class="fp-summary-chip-label">${t("activity.summary.accountType", "Account Type")}</div>
+            <div class="fp-summary-chip-value" style="font-size:0.85rem;">${accountTypeText}</div>
           </div>
         `;
-          })
-          .catch(function () {});
+            return;
+          }
 
-        /* ---- Render a batch of transactions ---- */
+          const fmt = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(state.balance);
+
+          el.innerHTML = `
+        <div class="fp-summary-chip">
+          <div class="fp-summary-chip-label">${t("activity.summary.totalCredits", "Total Credits")}</div>
+          <div class="fp-summary-chip-value green">${fmt}</div>
+        </div>
+        <div class="fp-summary-chip">
+          <div class="fp-summary-chip-label">${t("activity.summary.transactions", "Transactions")}</div>
+          <div class="fp-summary-chip-value">${TOTAL_TXNS}</div>
+        </div>
+        <div class="fp-summary-chip">
+          <div class="fp-summary-chip-label">${t("activity.summary.accountType", "Account Type")}</div>
+          <div class="fp-summary-chip-value" style="font-size:0.85rem;">${accountTypeText}</div>
+        </div>
+      `;
+        }
+
+        /* ================================================================ */
+        /*  Transactions                                                     */
+        /* ================================================================ */
+        function setViewMoreLoading() {
+          const viewMoreBtn = document.getElementById("fp-view-more-btn");
+          if (!viewMoreBtn) return;
+
+          viewMoreBtn.disabled = true;
+          viewMoreBtn.classList.add("fp-view-more-btn-loading");
+          viewMoreBtn.innerHTML = `
+        <div class="fp-spinner" style="width:18px;height:18px;border-width:2px;"></div>
+        ${t("activity.loading", "Loading...")}
+      `;
+        }
+
+        function updateViewMoreButton() {
+          const wrap = document.getElementById("fp-load-more-wrap");
+          const btn = document.getElementById("fp-view-more-btn");
+          if (!wrap || !btn) return;
+
+          if (state.allLoaded) return;
+
+          const remaining = Math.max(0, TOTAL_TXNS - state.offset);
+
+          btn.disabled = false;
+          btn.classList.remove("fp-view-more-btn-loading");
+
+          // Keep your existing style: "Load more (X remaining)"
+          btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        ${t("activity.loadMore", "Load more")}
+        <span style="opacity:.6;font-weight:400;">&nbsp;(${remaining} ${t("activity.remaining", "remaining")})</span>
+      `;
+        }
+
         function renderTransactions(items) {
           const wrap = document.getElementById("fp-txn-list-wrap");
+          if (!wrap) return;
 
-          items.forEach(function (t) {
+          items.forEach(function (tx) {
             const amt = new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-            }).format(t.amount);
+            }).format(tx.amount);
 
-            /* Month/year group header */
-            const monthYear = t.date
+            // Month/year group header based on the existing date string
+            const monthYear = tx.date
               .replace(/\s\d+,/, ",")
-              .replace(/,\s/, " "); /* "Month YYYY" */
-            const lastItem = renderedItems[renderedItems.length - 1];
+              .replace(/,\s/, " ");
+            const lastItem =
+              state.renderedItems[state.renderedItems.length - 1];
             const lastMY = lastItem
               ? lastItem.date.replace(/\s\d+,/, ",").replace(/,\s/, " ")
               : null;
@@ -523,97 +843,215 @@
               const header = document.createElement("div");
               header.className = "fp-txn-month-header";
               header.textContent =
-                t.date.split(" ").slice(0, 1).join(" ") +
+                tx.date.split(" ").slice(0, 1).join(" ") +
                 " " +
-                t.date.split(" ").slice(2).join(" ");
+                tx.date.split(" ").slice(2).join(" ");
               wrap.appendChild(header);
             }
 
             const link = document.createElement("a");
-            link.href = "transaction.html?id=" + encodeURIComponent(t.id);
+            link.href = "transaction.html?id=" + encodeURIComponent(tx.id);
             link.className = "fp-txn-item";
             link.innerHTML = `
-            <div class="fp-txn-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="fp-txn-info">
-              <p class="fp-txn-name">${t.sender}</p>
-              <p class="fp-txn-meta">${t.date} &middot; ${t.method}</p>
-            </div>
-            <div>
-              <p class="fp-txn-amount">+${amt}</p>
-            </div>
-            <div class="fp-txn-chevron">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          `;
+          <div class="fp-txn-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="fp-txn-info">
+            <p class="fp-txn-name">${tx.sender}</p>
+            <p class="fp-txn-meta">${tx.date} &middot; ${tx.method}</p>
+          </div>
+          <div><p class="fp-txn-amount">+${amt}</p></div>
+          <div class="fp-txn-chevron">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        `;
             wrap.appendChild(link);
-            renderedItems.push(t);
+            state.renderedItems.push(tx);
           });
         }
 
-        /* ---- Load a page of transactions ---- */
         function loadPage() {
-          if (isLoading || allLoaded) return;
-          isLoading = true;
+          if (state.isLoading || state.allLoaded) return;
+          state.isLoading = true;
 
-          const viewMoreBtn = document.getElementById("fp-view-more-btn");
-          if (viewMoreBtn) {
-            viewMoreBtn.disabled = true;
-            viewMoreBtn.classList.add("fp-view-more-btn-loading");
-            viewMoreBtn.innerHTML = `
-            <div class="fp-spinner" style="width:18px;height:18px;border-width:2px;"></div>
-            Loading...
-          `;
-          }
+          setViewMoreLoading();
 
-          getTransactions({ offset: offset, limit: PER_PAGE })
+          getTransactions({ offset: state.offset, limit: PER_PAGE })
             .then(function (result) {
-              /* Remove skeleton on first load */
+              // Remove skeleton on first real load
               const skeleton = document.getElementById("fp-skeleton-rows");
               if (skeleton) skeleton.remove();
 
-              renderTransactions(result.items);
-              offset += result.items.length;
+              const items = result && result.items ? result.items : [];
+              renderTransactions(items);
 
-              if (!result.hasMore) {
-                allLoaded = true;
-                document
-                  .getElementById("fp-load-more-wrap")
-                  .classList.add("fp-hidden");
-                document
-                  .getElementById("fp-timeline-wrap")
-                  .classList.remove("fp-hidden");
+              state.offset += items.length;
+
+              if (!result || !result.hasMore) {
+                state.allLoaded = true;
+
+                const lm = document.getElementById("fp-load-more-wrap");
+                const tl = document.getElementById("fp-timeline-wrap");
+                if (lm) lm.classList.add("fp-hidden");
+                if (tl) tl.classList.remove("fp-hidden");
               } else {
-                document
-                  .getElementById("fp-load-more-wrap")
-                  .classList.remove("fp-hidden");
-                const btn = document.getElementById("fp-view-more-btn");
-                if (btn) {
-                  btn.disabled = false;
-                  btn.classList.remove("fp-view-more-btn-loading");
-                  const remaining = TOTAL_TXNS - offset;
-                  btn.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Load more <span style="opacity:.6;font-weight:400;">&nbsp;(${remaining} remaining)</span>
-              `;
-                }
+                const lm = document.getElementById("fp-load-more-wrap");
+                const tl = document.getElementById("fp-timeline-wrap");
+                if (tl) tl.classList.add("fp-hidden");
+                if (lm) lm.classList.remove("fp-hidden");
+
+                updateViewMoreButton();
               }
 
-              isLoading = false;
+              state.isLoading = false;
             })
             .catch(function () {
-              isLoading = false;
+              state.isLoading = false;
             });
         }
 
-        /* ---- Initial load ---- */
+        /* ================================================================ */
+        /*  Statement modal (translated validation/errors)                   */
+        /* ================================================================ */
+        function clearStmtErrors() {
+          state.stmtFieldErrorKey["fp-stmt-from"] = "";
+          state.stmtFieldErrorKey["fp-stmt-to"] = "";
+          state.stmtFieldErrorKey["fp-stmt-email"] = "";
+          state.stmtFormErrorText = "";
+          state.stmtFormErrorKey = "";
+
+          [
+            "fp-stmt-from-error",
+            "fp-stmt-to-error",
+            "fp-stmt-email-error",
+          ].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.textContent = "";
+              el.classList.add("fp-hidden");
+            }
+          });
+
+          const fe = document.getElementById("fp-stmt-form-error");
+          if (fe) {
+            fe.textContent = "";
+            fe.classList.add("fp-hidden");
+          }
+
+          ["fp-stmt-from", "fp-stmt-to", "fp-stmt-email"].forEach(
+            function (id) {
+              const el = document.getElementById(id);
+              if (el) el.classList.remove("fp-input-error");
+            },
+          );
+        }
+
+        function setStmtFieldError(fieldId, msgKey, fallback) {
+          state.stmtFieldErrorKey[fieldId] = msgKey || "";
+
+          const errEl = document.getElementById(fieldId + "-error");
+          const inputEl = document.getElementById(fieldId);
+
+          const msg = msgKey ? t(msgKey, fallback || "") : "";
+
+          if (errEl) {
+            errEl.textContent = msg;
+            errEl.classList.toggle("fp-hidden", !msg);
+          }
+          if (inputEl) inputEl.classList.toggle("fp-input-error", !!msg);
+        }
+
+        function setStmtFormError(msgTextOrEmpty, fallbackKey) {
+          const fe = document.getElementById("fp-stmt-form-error");
+          if (!fe) return;
+
+          state.stmtFormErrorText = msgTextOrEmpty || "";
+          state.stmtFormErrorKey = fallbackKey || "";
+
+          const msg = state.stmtFormErrorText
+            ? state.stmtFormErrorText
+            : state.stmtFormErrorKey
+              ? t(state.stmtFormErrorKey)
+              : "";
+
+          fe.textContent = msg;
+          fe.classList.toggle("fp-hidden", !msg);
+        }
+
+        function rerenderStmtErrors() {
+          // Re-apply visible field errors in current language
+          Object.keys(state.stmtFieldErrorKey).forEach(function (fieldId) {
+            const key = state.stmtFieldErrorKey[fieldId];
+            if (!key) return;
+            setStmtFieldError(fieldId, key);
+          });
+
+          // Re-apply form error if it's a generic translated one
+          if (!state.stmtFormErrorText && state.stmtFormErrorKey) {
+            setStmtFormError("", state.stmtFormErrorKey);
+          }
+        }
+
+        function openStmtModal() {
+          // Prefill email
+          getUser()
+            .then(function (u) {
+              const emailEl = document.getElementById("fp-stmt-email");
+              if (emailEl) emailEl.value = u.email;
+            })
+            .catch(function () {});
+
+          // Date defaults
+          const today = new Date();
+          const firstDay = new Date(today.getFullYear(), 0, 1);
+
+          const fromEl = document.getElementById("fp-stmt-from");
+          const toEl = document.getElementById("fp-stmt-to");
+
+          if (fromEl) fromEl.value = firstDay.toISOString().slice(0, 10);
+          if (toEl) toEl.value = today.toISOString().slice(0, 10);
+
+          // Reset views + errors
+          const fv = document.getElementById("fp-stmt-form-view");
+          const sv = document.getElementById("fp-stmt-success-view");
+          if (fv) fv.classList.remove("fp-hidden");
+          if (sv) sv.classList.add("fp-hidden");
+
+          clearStmtErrors();
+
+          openModal("fp-stmt-modal");
+        }
+
+        /* ================================================================ */
+        /*  renderAll + initial load                                         */
+        /* ================================================================ */
+        function renderAll() {
+          applyStaticText();
+          renderSummary();
+
+          // Keep controls translated without reload
+          if (state.isLoading) setViewMoreLoading();
+          else if (!state.allLoaded) updateViewMoreButton();
+
+          rerenderStmtErrors();
+        }
+
+        // Initial render of static text + translated skeleton labels
+        renderAll();
+
+        // Load summary data
+        getBalance()
+          .then(function (balance) {
+            state.balance = balance;
+            renderSummary();
+          })
+          .catch(function () {});
+
+        // Initial txns
         loadPage();
 
         /* ---- View more button ---- */
@@ -632,84 +1070,12 @@
             if (link) openStmtModal();
           });
 
-        /* ================================================================ */
-        /*  STATEMENT MODAL                                                  */
-        /* ================================================================ */
-
-        function openStmtModal() {
-          /* Prefill email */
-          getUser()
-            .then(function (u) {
-              document.getElementById("fp-stmt-email").value = u.email;
-            })
-            .catch(function () {});
-
-          /* Set sensible date defaults */
-          const today = new Date();
-          const firstDay = new Date(today.getFullYear(), 0, 1);
-          document.getElementById("fp-stmt-from").value = firstDay
-            .toISOString()
-            .slice(0, 10);
-          document.getElementById("fp-stmt-to").value = today
-            .toISOString()
-            .slice(0, 10);
-
-          /* Reset to form view */
-          document
-            .getElementById("fp-stmt-form-view")
-            .classList.remove("fp-hidden");
-          document
-            .getElementById("fp-stmt-success-view")
-            .classList.add("fp-hidden");
-          clearStmtErrors();
-
-          openModal("fp-stmt-modal");
-        }
-
-        function clearStmtErrors() {
-          [
-            "fp-stmt-from-error",
-            "fp-stmt-to-error",
-            "fp-stmt-email-error",
-          ].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) {
-              el.textContent = "";
-              el.classList.add("fp-hidden");
-            }
-          });
-          const fe = document.getElementById("fp-stmt-form-error");
-          if (fe) {
-            fe.textContent = "";
-            fe.classList.add("fp-hidden");
-          }
-
-          ["fp-stmt-from", "fp-stmt-to", "fp-stmt-email"].forEach(
-            function (id) {
-              const el = document.getElementById(id);
-              if (el) el.classList.remove("fp-input-error");
-            },
-          );
-        }
-
-        function setStmtFieldError(fieldId, msg) {
-          const errEl = document.getElementById(fieldId + "-error");
-          const inputEl = document.getElementById(fieldId);
-          if (errEl) {
-            errEl.textContent = msg;
-            errEl.classList.toggle("fp-hidden", !msg);
-          }
-          if (inputEl) inputEl.classList.toggle("fp-input-error", !!msg);
-        }
-
-        /* Close button */
+        /* ---- Close buttons ---- */
         document
           .getElementById("fp-stmt-modal-close")
           .addEventListener("click", function () {
             closeModal("fp-stmt-modal");
           });
-
-        /* Done button */
         document
           .getElementById("fp-stmt-done-btn")
           .addEventListener("click", function () {
@@ -733,16 +1099,25 @@
             let valid = true;
 
             if (!from) {
-              setStmtFieldError("fp-stmt-from", "Please select a start date.");
+              setStmtFieldError(
+                "fp-stmt-from",
+                "activity.errors.fromRequired",
+                "Please select a start date.",
+              );
               valid = false;
             }
             if (!to) {
-              setStmtFieldError("fp-stmt-to", "Please select an end date.");
+              setStmtFieldError(
+                "fp-stmt-to",
+                "activity.errors.toRequired",
+                "Please select an end date.",
+              );
               valid = false;
             }
             if (from && to && new Date(from) > new Date(to)) {
               setStmtFieldError(
                 "fp-stmt-to",
+                "activity.errors.toAfterFrom",
                 "End date must be after start date.",
               );
               valid = false;
@@ -750,12 +1125,14 @@
             if (!email) {
               setStmtFieldError(
                 "fp-stmt-email",
+                "activity.errors.emailRequired",
                 "Please enter an email address.",
               );
               valid = false;
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
               setStmtFieldError(
                 "fp-stmt-email",
+                "activity.errors.emailInvalid",
                 "Please enter a valid email address.",
               );
               valid = false;
@@ -772,7 +1149,10 @@
               .then(function () {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove("fp-btn-loading");
-                submitBtn.textContent = "Submit Request";
+                submitBtn.textContent = t(
+                  "activity.modal.submit",
+                  "Submit Request",
+                );
 
                 document
                   .getElementById("fp-stmt-form-view")
@@ -784,14 +1164,21 @@
               .catch(function (err) {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove("fp-btn-loading");
-                submitBtn.textContent = "Submit Request";
+                submitBtn.textContent = t(
+                  "activity.modal.submit",
+                  "Submit Request",
+                );
 
-                const fe = document.getElementById("fp-stmt-form-error");
-                fe.textContent =
-                  err.message || "An error occurred. Please try again.";
-                fe.classList.remove("fp-hidden");
+                // Keep API error text if provided, otherwise translated generic
+                if (err && err.message) setStmtFormError(err.message, "");
+                else setStmtFormError("", "activity.errors.generic");
               });
           });
+
+        // Live update (no reload) like dashboard
+        window.addEventListener("fp:langchange", function () {
+          renderAll();
+        });
       })();
     </script>
   </body>
