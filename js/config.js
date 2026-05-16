@@ -14,7 +14,7 @@ const FP_CONFIG = {
     id: "usr_001",
     email: "easonchanyinkshun@gmail.com",
     password: "EASONCHAN27",
-    firstName: "Margrate",
+    firstName: "Margaret",
     lastName: "Ola",
     phone: "+1 (908) 251-9984",
     address:
